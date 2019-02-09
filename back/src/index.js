@@ -1,47 +1,77 @@
-/**
- * First, we import the function we need from the Node `http` library
- * This library is included by default with Node 
- **/
-import { createServer } from 'http'
+import initializeDatabase from './database/question'
+import app from './app'
+const start = async () => {
+  const controller = await initializeDatabase();
 
-/**
- * This function will be used as a request handler
- * by our server. It will run for every request the server
- * receives. It will always answer "hello", with a status code
- * of 200.
- **/ 
-const whenRequestReceived = (request /* the request sent by the client*/, response /* the response we use to answer*/) => {
-  /**
-   * We have to specify the status code (200), which means everything is ok,
-   * and the content type, which tells the browser we're sending plain text.
-   * Not specifying those is ok (the browser will infer them), but not 
-   * correct.
-   **/
-  response.writeHead(200, { 'Content-type': `text/plain` });
-  /**
-   * We write our actual response, a text that says "hello"
-   **/ 
-  response.write(`Hello`);
-  /**
-   * We terminate the response, so the browser can close the connection.
-   * As a user, we know this happens because the browser stops displaying the
-   * loading spinner
-   **/
-  response.end( );
-}
+  app.get("/", (req, res, next) => res.send("ok"));
 
-/**
- * This is our server object, created through the `createServer`
- * function provided by the `http` library.
- * We give it the `whenRequestReceived` function we wrote above so
- * any request directed at the server gets passed to this function
- **/
-const server = createServer(whenRequestReceived)
+  // CREATE
+  app.get("/question/new", async (req, res, next) => {
+    try {
+      const { question } = req.query;
+      const result = await controller.createQuestion({ question });
+      res.json({ success: true, result });
+    } catch (e) {
+      next(e);
+    }
+  });
 
-/**
- * Finally, we start the server by using `listen`, and specifying
- * a port. In Node, we traditionally use the port `3000`, but since
- * we already will have something running on port 3000, we choose something 
- * else.
- **/
-server.listen(8080, ()=>{console.log('ok, listening')});
+  // READ
+  
+  app.get("/questions/get/:id", async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const question = await controller.getQuestion(id);
+      res.json({ success: true, result: question });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+
+
+  // DELETE
+  app.get("/questions/delete/:id", async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const result = await controller.deleteQuestion(id);
+      res.json({ success: true, result });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // UPDATE
+  app.get("/questions/update/:id", async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const { Title } = req.query;
+      const result = await controller.updateQuestion(id, { Title });
+      res.json({ success: true, result });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // LIST
+  app.get("/questions/list", async (req, res, next) => {
+    try {
+      const { order } = req.query;
+      const questions = await controller.getQuestionList(order);
+      res.json({ success: true, result: questions });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  // ERROR
+  app.use((err, req, res, next) => {
+    console.error(err)
+    const message = err.message
+    res.status(500).json({ success:false, message })
+  })
+  
+  app.listen(8080, () => console.log("server listening on port 8080"));
+};
+
+start();
