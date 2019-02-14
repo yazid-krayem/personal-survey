@@ -5,19 +5,18 @@ const start = async () => {
 
   app.get("/", (req, res, next) => res.send("ok"));
 
-  // CREATE question
-  app.get("/question/add", async (req, res, next) => {
+   // CREATE
+   app.get("/question/add", async (req, res, next) => {
     try {
-      const { question } = req.query;
-      const result = await controller.createQuestion({ question });
+      const { question_title , question_type } = req.query;
+      const result = await controller.createQuestion({ question_title,question_type });
       res.json({ success: true, result });
     } catch (e) {
       next(e);
     }
   });
 
-  // READ question
-  
+  // READ
   app.get("/questions/get/:id", async (req, res, next) => {
     try {
       const { id } = req.params;
@@ -28,9 +27,7 @@ const start = async () => {
     }
   });
 
-
-
-  // DELETE question
+  // DELETE
   app.get("/questions/delete/:id", async (req, res, next) => {
     try {
       const { id } = req.params;
@@ -41,19 +38,19 @@ const start = async () => {
     }
   });
 
-  // UPDATE question
+  // UPDATE
   app.get("/questions/update/:id", async (req, res, next) => {
     try {
       const { id } = req.params;
-      const { Title } = req.query;
-      const result = await controller.updateQuestion(id, { Title });
+      const { question_title,question_type } = req.query;
+      const result = await controller.updateQuestion(id, { question_title,question_type });
       res.json({ success: true, result });
     } catch (e) {
       next(e);
     }
   });
 
-  // LIST question
+  // LIST
   app.get("/questions/list", async (req, res, next) => {
     try {
       const { order } = req.query;
@@ -63,6 +60,7 @@ const start = async () => {
       next(e);
     }
   });
+
 //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 //////////////////////////////////////

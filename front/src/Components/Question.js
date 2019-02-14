@@ -54,12 +54,14 @@ export default class Question extends React.Component {
           name="question_title_input"
           defaultValue={question_title}
         />
-        <input
-          type="text"
-          placeholder="type"
-          name="question_type_input"
-          defaultValue={question_type}
-        />
+        <select name="question_type_input"
+        defaultValue={question_type}
+        >
+          <option></option>
+          <option>text</option>
+          <option>radio</option>
+
+          </select>
         
           
         <div>

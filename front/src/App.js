@@ -157,9 +157,9 @@ createQuestion = async props => {
   onSubmit = evt => {
     evt.preventDefault();
     const { question_title, question_type } = this.state;
-    // create the contact from mail and email
+    // add the question 
     this.createQuestion({ question_title,  question_type });
-    // empty name and email so the text input fields are reset
+    // empty
     this.setState({ question_title:'',question_type:'' });
   };
 
