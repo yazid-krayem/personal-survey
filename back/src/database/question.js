@@ -8,17 +8,17 @@ const initializeDatabase = async () =>{
 
     /**
    * creates a question
-   * @param {object} props an object with keys `question_title` and 
+   * @param {object} props an object with keys `question_title`,`question_type`
    * @returns {number} the id of the created question (or an error if things went wrong) 
    */
 
   const createQuestion = async (props) => {
-    if(!props || !props.question ){
-      throw new Error(`you must provide a title`)
+    if(!props ){
+      throw new Error(`you must provide a name and an type`)
     }
-    const { question } = props
+    const { question_title , question_type } = props
     try{
-      const result = await db.run(SQL`INSERT INTO question (question_title) VALUES (${question})`);
+      const result = await db.run(SQL`INSERT INTO question (question_title,question_type) VALUES (${question_title},${question_type})`);
       const id = result.stmt.lastID
       return id
     }catch(e){
@@ -45,38 +45,44 @@ const initializeDatabase = async () =>{
 
         /**
    * Edits a question
-   * @param {number} id the id of the question to edit
-   * @param {object} props an object with at least one of `title_question`
+   * @param {number} question_id the id of the question to edit
+   * @param {object} props an object with at least one of ``
    */
 
-        const updateQuestion = async (id,props) =>{
-            if(!props || !props.question){
-                throw new Error (`you must provide a question`);
-            }
-            const {question} = props
-            try{
-                let statement = '';
-                if(question){
-                    statement = SQL`UPDATE question SET question_title${question}, WHERE question_id =${id}`
-                }
-                const result = await db.run(statement)
-                if(result.stmt.changes === 0 ){
-                    throw new Error(`no changes were made`)
-                }
-                return true
-            }catch(e) {
-                throw new Error (`couldn't update the question ${id}:` + e.message)
-            }
-        }
+  const updateQuestion = async (question_id, props) => {
+    if (!props || !(props.question_title || props.question_type )) {
+      throw new Error(`you must provide a question`);
+    }
+    const { question_title,question_type } = props;
+    try {
+      let statement = "";
+      if (question_title && question_type ) {
+        statement = SQL`UPDATE question SET question_title=${question_title}, question_type=${question_type} WHERE question_id = ${question_id}`;
+      } else if (question_title) {
+        statement = SQL`UPDATE question SET question_title=${question_title} WHERE question_id = ${question_id}`;
+      } else if (question_type) {
+        statement = SQL`UPDATE question SET question_type=${question_type} WHERE question_id = ${question_id}`;
+      } 
+      
+      const result = await db.run(statement);
+      if (result.stmt.changes === 0) {
+        throw new Error(`no changes were made`);
+      }
+      return true;
+    } catch (e) {
+      throw new Error(`couldn't update the question ${question_id}: ` + e.message);
+    }
+  }
+
         /**
    * Retrieves a question
    * @param {number} id the id of the question
-   * @returns {object} an object with `question_title`, and `question_id`, representing a question, or an error 
+   * @returns {object} an object with `question_title`, `question_type` and `question_id`, representing a question, or an error 
    */
   const getQuestion = async (id) => {
     try{
-      const qeustionsList = await db.all(SQL`SELECT question_id AS id, question_title, question_type FROM question WHERE question_id = ${id}`);
-      const question = qeustionsList[0]
+      const question_List = await db.all(SQL`SELECT * FROM question WHERE question_id = ${id}`);
+      const question = question_List[0]
       if(!question){
         throw new Error(`question ${id} not found`)
       }
@@ -85,15 +91,16 @@ const initializeDatabase = async () =>{
       throw new Error(`couldn't get the question ${id}: `+e.message)
     }
   }
+
      /**
    * retrieves the questions from the database
-   * @param {string} orderBy an optional string that is either "question"
+   * @param {string} orderBy an optional string that is either "title_question"
    * @returns {array} the list of questions
    */
 
    const getQuestionList = async(orderBy) =>{
        try{
-           let statement = `SELECT question_id AS id , question_title FROM question `
+           let statement = `SELECT question_id AS id , question_title , question_type FROM question `
            switch(orderBy){
             case 'question_title': statement+= ` ORDER BY question_title`; break;
             default: break
@@ -107,13 +114,121 @@ const initializeDatabase = async () =>{
       throw new Error(`couldn't retrieve questions: `+e.message)
    }
    }
-   
+   ////////////////////////////////////////////////////////////////////
+   ///////////////////////////////////////////////////////
+   ///////////////////////////////////////////////
+     /**
+   * creates a question
+   * @param {object} props an object with keys `answer_id` and `question_questrion_id`
+   * @returns {number} the id of the created question (or an error if things went wrong) 
+   */
+
+  const createAnswer = async (props) => {
+    if(!props || !props.question ){
+      throw new Error(`you must provide a answer`)
+    }
+    const { answer } = props
+    try{
+      const result = await db.run(SQL`INSERT INTO answer (answer_id,answer_text) VALUES (${answer})`);
+      const id = result.stmt.lastID
+      return id
+    }catch(e){
+      throw new Error(`couldn't insert this combination: `+e.message)
+    }
+  }
+
+/**
+   * deletes an answer
+   * @param {number} id the id of the answer to delete
+   * @returns {boolean} `true` if the answer was deleted, an error otherwise 
+   */
+        const deleteAnswer = async (id) =>{
+            try{
+                const result = await db.run(SQL `DELETE FROM answer WHERE answer_id =${id}`)
+                if(result.stmt.changes === 0){
+                 throw new Error (`answer "${id}" does not exist`)
+                }
+                return true    
+            }catch(e){
+                throw new Error (`couldn't delete the answer "${id}": `+e.message)
+            }
+        }
+
+        /**
+   * Edits a answer
+   * @param {number} id the id of the answer to edit
+   * @param {object} props an object with at least one of `answer_text`
+   */
+
+        const updateAnswer = async (id,props) =>{
+            if(!props || !props.answer){
+                throw new Error (`you must provide an answer`);
+            }
+            const {answer} = props
+            try{
+                let statement = '';
+                if(answer){
+                    statement = SQL`UPDATE answer SET answer_text${answer}, WHERE answer_id =${id}`
+                }
+                const result = await db.run(statement)
+                if(result.stmt.changes === 0 ){
+                    throw new Error(`no changes were made`)
+                }
+                return true
+            }catch(e) {
+                throw new Error (`couldn't update the answer ${id}:` + e.message)
+            }
+        }
+        /**
+   * Retrieves a answer
+   * @param {number} id the id of the answer
+   * @returns {object} an object with `answer_text`, and `answer_id`, representing an answer, or an error 
+   */
+  const getAnswer = async (id) => {
+    try{
+      const answerList = await db.all(SQL`SELECT answer_id AS id, answer_text FROM answer WHERE answer_id = ${id}`);
+      const answer = answerList[0]
+      if(!answer){
+        throw new Error(`answer ${id} not found`)
+      }
+      return answer
+    }catch(e){
+      throw new Error(`couldn't get the answer ${id}: `+e.message)
+    }
+  }
+     /**
+   * retrieves the answers from the database
+   * @param {string} orderBy an optional string that is either "answer"
+   * @returns {array} the list of answers
+   */
+
+   const getAnswerList = async(orderBy) =>{
+       try{
+           let statement = `SELECT answer_id AS id , answer_text FROM answer `
+           switch(orderBy){
+            case 'answer_text': statement+= ` ORDER BY answer_text`; break;
+            default: break
+        }
+        const rows = await db.all(statement)
+      if(!rows.length){
+        throw new Error(`no rows found`)
+       }
+       return rows
+    }catch(e){
+      throw new Error(`couldn't retrieve answer: `+e.message)
+   }
+   }
 const controller = {
     getQuestionList,
     createQuestion,
     updateQuestion,
     deleteQuestion,
-    getQuestion
+    getQuestion,
+    getAnswer,
+    getAnswerList,
+    createAnswer,
+    updateAnswer,
+    deleteAnswer
 }
 return controller
 }

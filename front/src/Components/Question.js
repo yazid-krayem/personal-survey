@@ -1,0 +1,102 @@
+import React from 'react';
+
+
+export default class Question extends React.Component {
+  state = {
+    editMode: false
+  };
+  toggleEditMode = () => {
+    const editMode = !this.state.editMode;
+    this.setState({ editMode });
+  };
+  renderEditMode() {
+    // const { question_id, question_title, question_type, updateQuestion, deleteQuestion } = this.props;
+    return <div> edit mode</div>;
+    
+  }
+  
+  renderViewMode() {
+    const { question_id, question_title, question_type, deleteQuestion,test } = this.props;
+    
+    return (
+      <div>
+        {test}
+      
+        <div>
+        <span>
+          {question_id} - {question_title} - {question_type}
+        </span>
+        <button onClick={this.toggleEditMode} className="success">
+          edit
+        </button>
+        <button onClick={() => deleteQuestion(question_id)} className="warning">
+          x
+        </button>
+        </div>
+        <div>
+        </div>
+        
+      </div>
+    );
+  }
+  
+   renderEditMode() {
+    const { question_title, question_type } = this.props;
+    return (
+      
+      <form
+        className="third"
+        onSubmit={this.onSubmit}
+        onReset={this.toggleEditMode}
+      >
+        <input
+          type="text"
+          placeholder="question"
+          name="question_title_input"
+          defaultValue={question_title}
+        />
+        <input
+          type="text"
+          placeholder="type"
+          name="question_type_input"
+          defaultValue={question_type}
+        />
+        
+          
+        <div>
+          <input type="submit" value="ok" />
+          <input type="reset" value="cancel" className="button" />
+        </div>
+      </form>
+    );
+  } 
+  onSubmit = evt => {
+    // stop the page from refreshing
+    evt.preventDefault();
+    // target the form
+    const form = evt.target;
+    // extract the two inputs from the form
+    const question_title_input = form.question_title_input;
+    const question_type_input = form.question_type_input;
+    // extract the values
+    const question_title = question_title_input.value;
+    const question_type = question_type_input.value;
+    // get the question_id and the update function from the props
+    const { question_id, updateQuestion } = this.props;
+    // run the update question function
+    updateQuestion(question_id, { question_title,question_type });
+    // toggle back view mode
+    console.log(updateQuestion)
+    this.toggleEditMode();
+  };
+
+  render() {
+    const { editMode } = this.state;
+    if (editMode) {
+      return this.renderEditMode();
+    } else {
+      return this.renderViewMode();
+      
+    }
+  }
+}

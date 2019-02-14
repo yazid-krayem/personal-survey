@@ -1,7 +1,7 @@
 import sqlite from 'sqlite'
 import SQL from 'sql-template-strings';
 
-const initializeDatabase = async () =>{
+const initializeDatabaseAnswer = async () =>{
 
     const db = await sqlite.open("./personal.sqlite");
 
@@ -108,14 +108,14 @@ const initializeDatabase = async () =>{
    }
    }
    
-const controller = {
+const controllerAnswer = {
     getAnswerList,
     createAnswer,
     updateAnswer,
     deleteAnswer,
     getAnswer
 }
-return controller
+return controllerAnswer
 }
 
 export default initializeDatabase
