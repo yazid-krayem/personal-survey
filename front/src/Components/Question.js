@@ -16,11 +16,10 @@ export default class Question extends React.Component {
   }
   
   renderViewMode() {
-    const { question_id, question_title, question_type, deleteQuestion,test } = this.props;
+    const { question_id, question_title, question_type, deleteQuestion } = this.props;
     
     return (
       <div>
-        {test}
       
         <div>
         <span>

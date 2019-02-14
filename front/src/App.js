@@ -190,13 +190,12 @@ createQuestion = async props => {
             onChange={evt => this.setState({ question_title: evt.target.value })}
             value={this.state.question_title}
           />
-          <input
-            type="text"
-            placeholder="type"
-            onChange={evt => this.setState({ question_type: evt.target.value })}
-            value={this.state.question_type}
-            
-          />
+          <select onChange={evt => this.setState({ question_type: evt.target.value })}
+            value={this.state.question_type}>
+            <option></option>
+            <option>radio</option>
+            <option>text</option>
+          </select>
          
           <div>
             <input type="submit" value="ok" />
