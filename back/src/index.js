@@ -66,10 +66,10 @@ const start = async () => {
 //////////////////////////////////////
 
   // CREATE answer
-  app.get("/answer/new", async (req, res, next) => {
+  app.get("/answer/add", async (req, res, next) => {
     try {
-      const { answer } = req.query;
-      const result = await controller.createAnswer({ answer });
+      const { answer_id, answer_text,question_question_id } = req.query;
+      const result = await controller.createAnswer({ answer_id, answer_text,question_question_id  });
       res.json({ success: true, result });
     } catch (e) {
       next(e);

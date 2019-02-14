@@ -118,9 +118,9 @@ const initializeDatabase = async () =>{
    ///////////////////////////////////////////////////////
    ///////////////////////////////////////////////
      /**
-   * creates a question
+   * creates a answer
    * @param {object} props an object with keys `answer_id` and `question_questrion_id`
-   * @returns {number} the id of the created question (or an error if things went wrong) 
+   * @returns {number} the id of the created an answer (or an error if things went wrong) 
    */
 
   const createAnswer = async (props) => {
@@ -129,7 +129,7 @@ const initializeDatabase = async () =>{
     }
     const { answer } = props
     try{
-      const result = await db.run(SQL`INSERT INTO answer (answer_id,answer_text) VALUES (${answer})`);
+      const result = await db.run(SQL`INSERT INTO answer (answer_text,question_question_id) VALUES (${answer})`);
       const id = result.stmt.lastID
       return id
     }catch(e){

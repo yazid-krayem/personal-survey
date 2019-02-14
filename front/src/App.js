@@ -1,11 +1,18 @@
 import React, { Component } from 'react';
-import { withRouter } from "react-router-dom";
+import {BrowserRouter,Switch,Route} from 'react-router-dom';
 import Router from './Router';
 import Question from './Components/Question'
+import Submit from './Components/Submit';
+import Link from './Components/Link';
+import NavBar from './Components/NavBar/NavBar'
+import About from './Components/About';
+import Home from './Components/Home';
+import './App.css'
 
 class App extends Component {
   state={
     question_list: [],
+    answer_list:[],
     question_title:'',
     question_type:'',
     error_message: "",
@@ -125,6 +132,31 @@ createQuestion = async props => {
   }
 };
 
+//create answer
+createAnswer = async props => {
+  try {
+    if (!props || !(props.answer_text && props.question_question_id )) {
+      throw new Error(
+        `errrrrrrrrrrrrrrrrrrrrror `
+      );
+    }
+    const { answer_text,question_question_id } = props;
+    const response = await fetch(
+      `http://localhost:8080/answer/add?answer_text=${answer_text}&question_question_id=${question_question_id}`
+    );
+    const answer = await response.json();
+    if (answer.success) {
+      const answer_id = answer.result;
+      const answer = { answer_text,question_question_id, answer_id };
+      const answer_list = [...this.state.answer_list, answer];
+      this.setState({ answer });
+    } else {
+      this.setState({ error_message: answer.message });
+    }
+  } catch (err) {
+    this.setState({ error_message: err.message });
+  }
+};
 
   //All
   getAllQuestions = async order => {
@@ -135,7 +167,6 @@ createQuestion = async props => {
       const answer = await response.json();
       if (answer.success) {
         const question_list = answer.result;
-        console.log("here",question_list)
         this.setState({ question_list });
       } else {
         this.setState({ error_message: answer.message });
@@ -152,7 +183,6 @@ createQuestion = async props => {
   handleType = (e) =>{
     const value = e.target.value
     this.setState({type:value})
-    console.log(value)
   }
   onSubmit = evt => {
     evt.preventDefault();
@@ -163,16 +193,12 @@ createQuestion = async props => {
     this.setState({ question_title:'',question_type:'' });
   };
 
-  render() {
+  surveyFormat =() =>{
     const  question = this.state.question_list;
     const {error_message } = this.state;
-    return (
-      <div>
-             <header className="App-">
-
- 
- <div className="container" style={{background:'blue',width:"40%", textAlign:'center',margin:'0 auto'}}>
-     {error_message ? <p> ERROR! {error_message}</p> : false}
+    return(
+      <div className="App">
+         {error_message ? <p> ERROR! {error_message}</p> : false}
         {question.map(question => (
           <Question
             key={question.id}
@@ -188,10 +214,10 @@ createQuestion = async props => {
             type="text"
             placeholder="question"
             onChange={evt => this.setState({ question_title: evt.target.value })}
-            value={this.state.question_title}
+            value={this.question_title}
           />
           <select onChange={evt => this.setState({ question_type: evt.target.value })}
-            value={this.state.question_type}>
+            value={this.question_type}>
             <option></option>
             <option>radio</option>
             <option>text</option>
@@ -202,10 +228,36 @@ createQuestion = async props => {
             <input type="reset" value="cancel" className="button" />
           </div>
         </form>
-        </div>
+      </div>
+    )
+  }
+  render() {
+  
+    return (
+      <div>
+      
+        <NavBar />
+        <div className="home"> 
+      <br />    
+<br />
+<br />
+<div>
 
-</header>
-       {/* <Router /> */}
+        </div>
+ 
+ 
+    
+
+<BrowserRouter>
+    <Switch>
+      <Route exact path="/"  component={this.surveyFormat}/>
+      <Route  path="/About" component={About}/>
+      <Route  path="/link" component={Link} />
+     
+    </Switch>
+  </BrowserRouter>  
+  
+      </div>
       </div>
     );
   }
