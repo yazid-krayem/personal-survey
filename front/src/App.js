@@ -15,6 +15,7 @@ class App extends Component {
     answer_list:[],
     question_title:'',
     question_type:'',
+    question_data:'',
     error_message: "",
   }
   async componentDidMount() {
@@ -69,13 +70,13 @@ class App extends Component {
 
 updateQuestion = async (question_id, props) => {
   try {
-    if (!props || !(props.question_title || props.question_type )) {
+    if (!props || !(props.question_title || props.question_type ||!props.question_data )) {
       throw new Error(
         `you need at least something  `
       );
     }
     const response = await fetch(
-      `http://localhost:8080/questions/update/${question_id}?question_title=${props.question_title}&question_type=${props.question_type}`
+      `http://localhost:8080/questions/update/${question_id}?question_title=${props.question_title}&question_type=${props.question_type}&question_data=${props.question_data}`
     );
     const answer = await response.json();
     if (answer.success) {
@@ -86,8 +87,9 @@ updateQuestion = async (question_id, props) => {
         if (question.question_id === question_id) {
           const new_question = {
             question_id: question.question_id,
-            question_title: props.question_title || question.question_type,
-            question_type: props.question_type || question.question_title,
+            question_title: props.question_title || question.question_type || question.question_data,
+            question_type: props.question_type || question.question_title || question.question_data,
+            question_data:props.question_title || props.question_type || question.question_data,
           
           };
           return new_question;
@@ -109,19 +111,19 @@ updateQuestion = async (question_id, props) => {
 ////create
 createQuestion = async props => {
   try {
-    if (!props || !(props.question_title && props.question_type )) {
+    if (!props || !(props.question_title && props.question_type && props.question_data )) {
       throw new Error(
         `errrrrrrrrrrrrrrrrrrrrror `
       );
     }
-    const { question_title,question_type } = props;
+    const { question_title,question_type,question_data } = props;
     const response = await fetch(
-      `http://localhost:8080/question/add?question_title=${question_title}&question_type=${question_type}`
+      `http://localhost:8080/question/add?question_title=${question_title}&question_type=${question_type}&question_data=${question_data}`
     );
     const answer = await response.json();
     if (answer.success) {
       const question_id = answer.result;
-      const question = { question_title,question_type, question_id };
+      const question = { question_title,question_type,question_data, question_id };
       const question_list = [...this.state.question_list, question];
       this.setState({ question_list });
     } else {
@@ -140,14 +142,14 @@ createAnswer = async props => {
         `errrrrrrrrrrrrrrrrrrrrror `
       );
     }
-    const { answer_text,question_question_id } = props;
+    const { answer_text } = props;
     const response = await fetch(
-      `http://localhost:8080/answer/add?answer_text=${answer_text}&question_question_id=${question_question_id}`
+      `http://localhost:8080/answer/add?answer_text=${answer_text}`
     );
     const answer = await response.json();
     if (answer.success) {
       const answer_id = answer.result;
-      const answer = { answer_text,question_question_id, answer_id };
+      const answer = { answer_text, answer_id };
       const answer_list = [...this.state.answer_list, answer];
       this.setState({ answer });
     } else {
@@ -186,23 +188,24 @@ createAnswer = async props => {
   }
   onSubmit = evt => {
     evt.preventDefault();
-    const { question_title, question_type } = this.state;
+    const { question_title, question_type,question_data } = this.state;
     // add the question 
-    this.createQuestion({ question_title,  question_type });
+    this.createQuestion({ question_title,  question_type,question_data });
     // empty
-    this.setState({ question_title:'',question_type:'' });
+    this.setState({ question_title:'',question_type:'',question_data:'' });
   };
 
   surveyFormat =() =>{
     const  question = this.state.question_list;
     const {error_message } = this.state;
     return(
-      <div className="App">
+      <div className="survey">
          {error_message ? <p> ERROR! {error_message}</p> : false}
         {question.map(question => (
           <Question
             key={question.id}
             question_id={question.id}
+            question_data={question.question_data}
             question_title={question.question_title}
             question_type={question.question_type}
             updateQuestion={this.updateQuestion}
@@ -215,6 +218,11 @@ createAnswer = async props => {
             placeholder="question"
             onChange={evt => this.setState({ question_title: evt.target.value })}
             value={this.question_title}
+          />
+          <input type="text"
+            placeholder ="question_data"
+            onChange={evt => this.setState({ question_data: evt.target.value })}
+            value={this.question_data}
           />
           <select onChange={evt => this.setState({ question_type: evt.target.value })}
             value={this.question_type}>

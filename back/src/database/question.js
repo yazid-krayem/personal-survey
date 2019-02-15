@@ -3,12 +3,12 @@ import SQL from 'sql-template-strings';
 
 const initializeDatabase = async () =>{
 
-    const db = await sqlite.open("./personal.sqlite");
+    const db = await sqlite.open("./jad.db");
 
 
     /**
    * creates a question
-   * @param {object} props an object with keys `question_title`,`question_type`
+   * @param {object} props an object with keys `question_title`,`question_type`, `question_data`
    * @returns {number} the id of the created question (or an error if things went wrong) 
    */
 
@@ -16,9 +16,9 @@ const initializeDatabase = async () =>{
     if(!props ){
       throw new Error(`you must provide a name and an type`)
     }
-    const { question_title , question_type } = props
+    const { question_title , question_type ,question_data} = props
     try{
-      const result = await db.run(SQL`INSERT INTO question (question_title,question_type) VALUES (${question_title},${question_type})`);
+      const result = await db.run(SQL`INSERT INTO question (question_title,question_type,question_data) VALUES (${question_title},${question_type},${question_data})`);
       const id = result.stmt.lastID
       return id
     }catch(e){
@@ -53,16 +53,18 @@ const initializeDatabase = async () =>{
     if (!props || !(props.question_title || props.question_type )) {
       throw new Error(`you must provide a question`);
     }
-    const { question_title,question_type } = props;
+    const { question_title,question_type,question_data } = props;
     try {
       let statement = "";
-      if (question_title && question_type ) {
-        statement = SQL`UPDATE question SET question_title=${question_title}, question_type=${question_type} WHERE question_id = ${question_id}`;
+      if (question_title && question_type&& question_data ) {
+        statement = SQL`UPDATE question SET question_title=${question_title}, question_type=${question_type},question_data=${question_data} WHERE question_id = ${question_id}`;
       } else if (question_title) {
         statement = SQL`UPDATE question SET question_title=${question_title} WHERE question_id = ${question_id}`;
       } else if (question_type) {
         statement = SQL`UPDATE question SET question_type=${question_type} WHERE question_id = ${question_id}`;
-      } 
+      } else if (question_data){
+        statement = SQL`UPDATE question SET question_data=${question_data} WHERE question_id = ${question_id}`;
+      }
       
       const result = await db.run(statement);
       if (result.stmt.changes === 0) {
@@ -77,7 +79,7 @@ const initializeDatabase = async () =>{
         /**
    * Retrieves a question
    * @param {number} id the id of the question
-   * @returns {object} an object with `question_title`, `question_type` and `question_id`, representing a question, or an error 
+   * @returns {object} an object with `question_title`, `question_type`,`question_data and `question_id`, representing a question, or an error 
    */
   const getQuestion = async (id) => {
     try{
@@ -100,7 +102,7 @@ const initializeDatabase = async () =>{
 
    const getQuestionList = async(orderBy) =>{
        try{
-           let statement = `SELECT question_id AS id , question_title , question_type FROM question `
+           let statement = `SELECT question_id AS id , question_title , question_type,question_data FROM question `
            switch(orderBy){
             case 'question_title': statement+= ` ORDER BY question_title`; break;
             default: break
@@ -119,7 +121,7 @@ const initializeDatabase = async () =>{
    ///////////////////////////////////////////////
      /**
    * creates a answer
-   * @param {object} props an object with keys `answer_id` and `question_questrion_id`
+   * @param {object} props an object with keys `answer_id` and `answer_text`
    * @returns {number} the id of the created an answer (or an error if things went wrong) 
    */
 
@@ -129,7 +131,7 @@ const initializeDatabase = async () =>{
     }
     const { answer } = props
     try{
-      const result = await db.run(SQL`INSERT INTO answer (answer_text,question_question_id) VALUES (${answer})`);
+      const result = await db.run(SQL`INSERT INTO answer (answer_text) VALUES (${answer})`);
       const id = result.stmt.lastID
       return id
     }catch(e){
@@ -164,11 +166,11 @@ const initializeDatabase = async () =>{
             if(!props || !props.answer){
                 throw new Error (`you must provide an answer`);
             }
-            const {answer} = props
+            const {answer_text} = props
             try{
                 let statement = '';
                 if(answer){
-                    statement = SQL`UPDATE answer SET answer_text${answer}, WHERE answer_id =${id}`
+                    statement = SQL`UPDATE answer SET answer_text${answer_text}, WHERE answer_id =${id}`
                 }
                 const result = await db.run(statement)
                 if(result.stmt.changes === 0 ){

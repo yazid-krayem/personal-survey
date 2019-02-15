@@ -8,8 +8,8 @@ const start = async () => {
    // CREATE
    app.get("/question/add", async (req, res, next) => {
     try {
-      const { question_title , question_type } = req.query;
-      const result = await controller.createQuestion({ question_title,question_type });
+      const { question_title , question_type ,question_data } = req.query;
+      const result = await controller.createQuestion({ question_title,question_type,question_data });
       res.json({ success: true, result });
     } catch (e) {
       next(e);
@@ -43,7 +43,7 @@ const start = async () => {
     try {
       const { id } = req.params;
       const { question_title,question_type } = req.query;
-      const result = await controller.updateQuestion(id, { question_title,question_type });
+      const result = await controller.updateQuestion(id, { question_title,question_type,question_data });
       res.json({ success: true, result });
     } catch (e) {
       next(e);
@@ -68,8 +68,8 @@ const start = async () => {
   // CREATE answer
   app.get("/answer/add", async (req, res, next) => {
     try {
-      const { answer_id, answer_text,question_question_id } = req.query;
-      const result = await controller.createAnswer({ answer_id, answer_text,question_question_id  });
+      const { answer_id, answer_text } = req.query;
+      const result = await controller.createAnswer({ answer_id, answer_text  });
       res.json({ success: true, result });
     } catch (e) {
       next(e);

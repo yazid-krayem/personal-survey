@@ -1,10 +1,10 @@
-.App {
+.survey {
   text-align: center;
   margin: 0 auto;
   border: solid 1px black;
   width: 60%;
-  box-shadow: 5px 10px #888888;
-  background-color: rgba(54, 50, 50, 0.0015);
+  box-shadow: 5px 30px #888888;
+  background-color: rgba(12, 12, 12, 0.002);
 }
 .home{
 }
