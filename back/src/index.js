@@ -42,7 +42,7 @@ const start = async () => {
   app.get("/questions/update/:id", async (req, res, next) => {
     try {
       const { id } = req.params;
-      const { question_title,question_type } = req.query;
+      const { question_title,question_type,question_data } = req.query;
       const result = await controller.updateQuestion(id, { question_title,question_type,question_data });
       res.json({ success: true, result });
     } catch (e) {

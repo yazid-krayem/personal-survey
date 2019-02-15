@@ -58,13 +58,7 @@ const initializeDatabase = async () =>{
       let statement = "";
       if (question_title && question_type&& question_data ) {
         statement = SQL`UPDATE question SET question_title=${question_title}, question_type=${question_type},question_data=${question_data} WHERE question_id = ${question_id}`;
-      } else if (question_title) {
-        statement = SQL`UPDATE question SET question_title=${question_title} WHERE question_id = ${question_id}`;
-      } else if (question_type) {
-        statement = SQL`UPDATE question SET question_type=${question_type} WHERE question_id = ${question_id}`;
-      } else if (question_data){
-        statement = SQL`UPDATE question SET question_data=${question_data} WHERE question_id = ${question_id}`;
-      }
+      } 
       
       const result = await db.run(statement);
       if (result.stmt.changes === 0) {
