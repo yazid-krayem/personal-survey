@@ -1,23 +1,29 @@
 import React, { Component } from 'react';
-import {BrowserRouter,Switch,Route} from 'react-router-dom';
-import Router from './Router';
+import {BrowserRouter,Switch,Route,} from 'react-router-dom';
 import Question from './Components/Question'
-import Submit from './Components/Submit';
 import Link from './Components/Link';
 import NavBar from './Components/NavBar/NavBar'
 import About from './Components/About';
-import Home from './Components/Home';
+import {  toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
 import './App.css'
 
 class App extends Component {
+  
   state={
+    toggle: false,
     question_list: [],
     answer_list:[],
+    question_id:'',
     question_title:'',
     question_type:'',
     question_data:'',
     error_message: "",
+    isLoading: false
   }
+
   async componentDidMount() {
     await this.getAllQuestions();
    }
@@ -58,11 +64,14 @@ class App extends Component {
           question => question.question_id !== question_id
         );
         this.setState({ question_list });
+        toast('deleted')
       } else {
         this.setState({ error_message: answer.message });
+        toast.error(answer.message)
       }
     } catch (err) {
       this.setState({ error_message: err.message });
+      toast.error(err.message)
     }
   };
  
@@ -126,39 +135,17 @@ createQuestion = async props => {
       const question = { question_title,question_type,question_data, question_id };
       const question_list = [...this.state.question_list, question];
       this.setState({ question_list });
+      
     } else {
       this.setState({ error_message: answer.message });
     }
+    // this.setState({toggle: !this.state.toggle})
   } catch (err) {
     this.setState({ error_message: err.message });
   }
 };
 
-//create answer
-createAnswer = async props => {
-  try {
-    if (!props || !(props.answer_text && props.question_question_id )) {
-      throw new Error(
-        `errrrrrrrrrrrrrrrrrrrrror `
-      );
-    }
-    const { answer_text } = props;
-    const response = await fetch(
-      `http://localhost:8080/answer/add?answer_text=${answer_text}`
-    );
-    const answer = await response.json();
-    if (answer.success) {
-      const answer_id = answer.result;
-      const answer = { answer_text, answer_id };
-      const answer_list = [...this.state.answer_list, answer];
-      this.setState({ answer });
-    } else {
-      this.setState({ error_message: answer.message });
-    }
-  } catch (err) {
-    this.setState({ error_message: err.message });
-  }
-};
+
 
   //All
   getAllQuestions = async order => {
@@ -173,6 +160,7 @@ createAnswer = async props => {
       } else {
         this.setState({ error_message: answer.message });
       }
+      
     } catch (err) {
       this.setState({ error_message: err.message });
     }
@@ -194,12 +182,22 @@ createAnswer = async props => {
     // empty
     this.setState({ question_title:'',question_type:'',question_data:'' });
   };
+  SubmitQuestions = e =>{
+    // e.preventDefault();
+    // this.context.router.history.push(`/About`);
+    
+    // this.props.location.SubmitQuestions();
 
+  }
+componentDidCatch(){
+  this.SubmitQuestions()
+}
   surveyFormat =() =>{
     const  question = this.state.question_list;
     const {error_message } = this.state;
     return(
       <div className="survey">
+      <form onSubmit={this.SubmitQuestions}>
          {error_message ? <p> ERROR! {error_message}</p> : false}
         {question.map(question => (
           <Question
@@ -212,6 +210,8 @@ createAnswer = async props => {
             deleteQuestion={this.deleteQuestion}
           />
         ))}
+        <button>submit</button>
+        </form>
 <form className="third" onSubmit={this.onSubmit}>
           <input
             type="text"
@@ -235,12 +235,14 @@ createAnswer = async props => {
             <input type="submit" value="ok" />
             <input type="reset" value="cancel" className="button" />
           </div>
-        </form>
+          </form>
+
+
+
       </div>
     )
   }
   render() {
-  
     return (
       <div>
       
@@ -256,10 +258,10 @@ createAnswer = async props => {
  
     
 
-<BrowserRouter>
+<BrowserRouter >
     <Switch>
-      <Route exact path="/"  component={this.surveyFormat}/>
-      <Route  path="/About" component={About}/>
+      <Route exact path="/"  component={this.surveyFormat}  />
+      <Route  path="/About" component={About} />
       <Route  path="/link" component={Link} />
      
     </Switch>

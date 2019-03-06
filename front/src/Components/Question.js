@@ -20,7 +20,7 @@ export default class Question extends React.Component {
     
     return (
       <div>
-      
+
         <div>
         <span>
           {question_id} - {question_title} - {question_data}-{question_type}

@@ -120,12 +120,13 @@ const initializeDatabase = async () =>{
    */
 
   const createAnswer = async (props) => {
-    if(!props || !props.question ){
+    if(!props  ){
       throw new Error(`you must provide a answer`)
     }
-    const { answer } = props
+    const { answer,question_id } = props;
+    const user_id =1
     try{
-      const result = await db.run(SQL`INSERT INTO answer (answer_text) VALUES (${answer})`);
+      const result = await db.run(SQL`INSERT INTO answer (answer_text,question_id,user_id) VALUES (${answer},${question_id},${user_id})`);
       const id = result.stmt.lastID
       return id
     }catch(e){
@@ -200,7 +201,7 @@ const initializeDatabase = async () =>{
 
    const getAnswerList = async(orderBy) =>{
        try{
-           let statement = `SELECT answer_id AS id , answer_text FROM answer `
+           let statement = `SELECT answer_id AS id , answer_text,question_id,user_id FROM answer `
            switch(orderBy){
             case 'answer_text': statement+= ` ORDER BY answer_text`; break;
             default: break
@@ -214,6 +215,24 @@ const initializeDatabase = async () =>{
       throw new Error(`couldn't retrieve answer: `+e.message)
    }
    }
+   const innerQuestionsAnswers = async(orderBy) =>{
+    try{
+        let statement = `SELECT *
+        FROM question
+        INNER JOIN answer on answer.question_id = question.question_id;`
+        switch(orderBy){
+         case 'question_title': statement+= ` ORDER BY question_title`; break;
+         default: break
+     }
+     const rows = await db.all(statement)
+   if(!rows.length){
+     throw new Error(`no rows found`)
+    }
+    return rows
+ }catch(e){
+   throw new Error(`couldn't retrieve questions: `+e.message)
+}
+}
 const controller = {
     getQuestionList,
     createQuestion,
@@ -224,7 +243,8 @@ const controller = {
     getAnswerList,
     createAnswer,
     updateAnswer,
-    deleteAnswer
+    deleteAnswer,
+    innerQuestionsAnswers
 }
 return controller
 }

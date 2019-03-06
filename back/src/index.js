@@ -68,8 +68,8 @@ const start = async () => {
   // CREATE answer
   app.get("/answer/add", async (req, res, next) => {
     try {
-      const { answer_id, answer_text } = req.query;
-      const result = await controller.createAnswer({ answer_id, answer_text  });
+      const { question_id, answer_text,user_id } = req.query;
+      const result = await controller.createAnswer({ answer_text,question_id,user_id  });
       res.json({ success: true, result });
     } catch (e) {
       next(e);
@@ -118,6 +118,17 @@ const start = async () => {
     try {
       const { order } = req.query;
       const answers = await controller.getAnswerList(order);
+      res.json({ success: true, result: answers });
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  //inner join 
+  app.get("/inner", async (req, res, next) => {
+    try {
+      const { order } = req.query;
+      const answers = await controller.innerQuestionsAnswers(order);
       res.json({ success: true, result: answers });
     } catch (e) {
       next(e);
