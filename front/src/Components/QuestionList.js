@@ -72,7 +72,7 @@ export default class QuestionList extends React.Component {
         <span>
           {question_id} - {question_title} - {question_data}-{question_type}
         </span>
-          <form >
+          <form onSubmit={this.onSave}>
           <input
           type="text"
           placeholder="answer"
@@ -81,9 +81,8 @@ export default class QuestionList extends React.Component {
           value={this.state.answer_text}
         />
           <button onClick={this.onSave}>save</button>
-
+          
           </form>
-        
        
         </div>
         
@@ -93,22 +92,14 @@ export default class QuestionList extends React.Component {
   
    
   onSave = evt => {
-    // stop the page from refreshing
     evt.preventDefault();
 
     const user_id =1
-    // target the form
-    // const form = evt.target;
-   
-    // const answer_text_input = form.answer_text_input;
     
-    // const answer_text_ = answer_text_input.value;
     const { question_id } = this.props;
-    // run the update question function
     const answer_text = this.state.answer_text;
 
     this.createAnswer({answer_text , question_id,user_id });
-    // toggle back view mode
     console.log('er',this.state.answer_text)
     this.toggleEditMode();
   };

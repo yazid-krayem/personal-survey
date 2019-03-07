@@ -1,17 +1,21 @@
 import React, { Component} from 'react';
-import QuestionList from '../Components/QuestionList'
+import QuestionList from '../Components/QuestionList';
+import { withRouter } from 'react-router-dom';
+
+
 
 class About extends Component {
   state={
     toggle: false,
     question_list: [],
     error_message: "",
-    isLoading: false
+    isLoading: false,
   }
   async componentDidMount() {
     await this.getAllQuestions();
     
    }
+   
   getAllQuestions = async order => {
     try {
       const response = await fetch(
@@ -54,6 +58,10 @@ class About extends Component {
       this.setState({ error_message: err.message });
     }
   };
+
+  change =() =>{
+      this.props.history.push('/link')
+  }
   
   surveyFormat =() =>{
     const  question = this.state.question_list;
@@ -76,7 +84,7 @@ class About extends Component {
 
          <form>
           <div>
-          <button>submit</button>
+          <button onClick={this.change}>mm</button>
           </div>
           </form>
 
@@ -94,7 +102,7 @@ return(
 );
 }
 }
-export default About;
+export default withRouter(About);
 
 
 

@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
-import {BrowserRouter,Switch,Route,} from 'react-router-dom';
+import {BrowserRouter,Switch,Route} from 'react-router-dom';
 import Question from './Components/Question'
 import Link from './Components/Link';
 import NavBar from './Components/NavBar/NavBar'
 import About from './Components/About';
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { withRouter } from 'react-router-dom';
+
 
 
 import './App.css'
@@ -192,6 +194,9 @@ createQuestion = async props => {
 componentDidCatch(){
   this.SubmitQuestions()
 }
+change = ()=>{
+  this.props.history.push('/About')
+}
   surveyFormat =() =>{
     const  question = this.state.question_list;
     const {error_message } = this.state;
@@ -210,7 +215,7 @@ componentDidCatch(){
             deleteQuestion={this.deleteQuestion}
           />
         ))}
-        <button>submit</button>
+        <button onClick={this.change}>submit</button>
         </form>
 <form className="third" onSubmit={this.onSubmit}>
           <input
@@ -273,4 +278,4 @@ componentDidCatch(){
   }
 }
 
-export default App;
+export default withRouter(App);
