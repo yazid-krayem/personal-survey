@@ -123,10 +123,10 @@ const initializeDatabase = async () =>{
     if(!props  ){
       throw new Error(`you must provide a answer`)
     }
-    const { answer,question_id } = props;
+    const { answer_text,question_id } = props;
     const user_id =1
     try{
-      const result = await db.run(SQL`INSERT INTO answer (answer_text,question_id,user_id) VALUES (${answer},${question_id},${user_id})`);
+      const result = await db.run(SQL`INSERT INTO answer (answer_text,question_id,user_id) VALUES (${answer_text},${question_id},${user_id})`);
       const id = result.stmt.lastID
       return id
     }catch(e){

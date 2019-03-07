@@ -69,6 +69,7 @@ const start = async () => {
   app.get("/answer/add", async (req, res, next) => {
     try {
       const { question_id, answer_text,user_id } = req.query;
+      console.log(question_id, answer_text,user_id)
       const result = await controller.createAnswer({ answer_text,question_id,user_id  });
       res.json({ success: true, result });
     } catch (e) {

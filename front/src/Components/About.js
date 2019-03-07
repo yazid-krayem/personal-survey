@@ -69,7 +69,6 @@ class About extends Component {
             question_data={question.question_data}
             question_title={question.question_title}
             question_type={question.question_type}
-            createAnswer={this.createAnswer}
           />
         ))}
         
@@ -87,7 +86,6 @@ class About extends Component {
     )
   }
 render() {
-  console.log("about",this.props)
 return(
     <div>
       <p>About</p>

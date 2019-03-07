@@ -4,7 +4,57 @@ import React from 'react';
 export default class QuestionList extends React.Component {
   state = {
     editMode: false,
-    answer_text:''
+    answer_text:'',
+    answer_list:[]
+  };
+  async componentDidMount() {
+    await this.getAllAnswers();
+    
+   }
+  getAllAnswers = async order => {
+    try {
+      const response = await fetch(
+        `//localhost:8080/answers/list`
+      );
+      const answer = await response.json();
+      if (answer.success) {
+        const answer_list = answer.result;
+        this.setState({ answer_list });
+      } else {
+        this.setState({ error_message: answer.message });
+      }
+      
+    } catch (err) {
+      this.setState({ error_message: err.message });
+    }
+  };
+  createAnswer = async props => {
+    console.log(props)
+    try {
+      if (!props || !(props.answer_text && props.question_id )) {
+        throw new Error(
+          `errrrrrrrrrrrrrrrrrrrrror `
+        );
+      }
+      const { answer_text,question_id } = props;
+      const user_id=1
+      const response = await fetch(
+        `http://localhost:8080/answer/add?answer_text=${answer_text}&question_id=${question_id}&user_id=${user_id}`
+      );
+
+      const answer = await response.json();
+      console.log(answer)
+      if (answer.success) {
+        const answer_id = answer.result;
+        const answer = { answer_text,answer_id };
+        const answer_list = [...this.state.answer_list, answer];
+        this.setState({ answer_list });
+      } else {
+        this.setState({ error_message: answer.message });
+      }
+    } catch (err) {
+      this.setState({ error_message: err.message });
+    }
   };
   toggleEditMode = () => {
     const editMode = !this.state.editMode;
@@ -27,8 +77,8 @@ export default class QuestionList extends React.Component {
           type="text"
           placeholder="answer"
           name="answer_text"
-          onChange={evt => this.setState({ answer: evt.target.value })}
-          value={this.state.answer}
+          onChange={evt => this.setState({ answer_text: evt.target.value })}
+          value={this.state.answer_text}
         />
           <button onClick={this.onSave}>save</button>
 
@@ -45,7 +95,6 @@ export default class QuestionList extends React.Component {
   onSave = evt => {
     // stop the page from refreshing
     evt.preventDefault();
-    console.log(this.props)
 
     const user_id =1
     // target the form
@@ -54,12 +103,13 @@ export default class QuestionList extends React.Component {
     // const answer_text_input = form.answer_text_input;
     
     // const answer_text_ = answer_text_input.value;
-    const { answer_text } = this.state;
-    const { question_id, createAnswer } = this.props;
+    const { question_id } = this.props;
     // run the update question function
-    createAnswer( answer_text,{ question_id,user_id });
+    const answer_text = this.state.answer_text;
+
+    this.createAnswer({answer_text , question_id,user_id });
     // toggle back view mode
-    console.log('er',this.props)
+    console.log('er',this.state.answer_text)
     this.toggleEditMode();
   };
 
