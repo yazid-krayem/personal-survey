@@ -263,14 +263,15 @@ change = ()=>{
  
     
 
-<BrowserRouter >
+
     <Switch>
       <Route exact path="/"  component={this.surveyFormat}  />
       <Route  path="/About" component={About} />
       <Route  path="/link" component={Link} />
+      <Route render={()=><div>not found!</div>}/>
+
      
     </Switch>
-  </BrowserRouter>  
   
       </div>
       </div>

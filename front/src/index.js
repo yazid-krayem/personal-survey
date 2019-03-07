@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import "picnic/picnic.min.css";
-import{history} from 'react-router'
 import { BrowserRouter as Router } from "react-router-dom";
 import './App.css'
 

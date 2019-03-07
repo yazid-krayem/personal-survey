@@ -29,7 +29,6 @@ export default class QuestionList extends React.Component {
     }
   };
   createAnswer = async props => {
-    console.log(props)
     try {
       if (!props || !(props.answer_text && props.question_id )) {
         throw new Error(
@@ -43,7 +42,6 @@ export default class QuestionList extends React.Component {
       );
 
       const answer = await response.json();
-      console.log(answer)
       if (answer.success) {
         const answer_id = answer.result;
         const answer = { answer_text,answer_id };
@@ -100,7 +98,6 @@ export default class QuestionList extends React.Component {
     const answer_text = this.state.answer_text;
 
     this.createAnswer({answer_text , question_id,user_id });
-    console.log('er',this.state.answer_text)
     this.toggleEditMode();
   };
 
