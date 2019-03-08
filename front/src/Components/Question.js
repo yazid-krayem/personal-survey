@@ -1,5 +1,5 @@
 import React from 'react';
-
+import './questions.css'
 
 export default class Question extends React.Component {
   state = {
@@ -21,7 +21,7 @@ export default class Question extends React.Component {
     return (
       <div>
 
-        <div>
+        <div className="questions">
         <span>
           {question_id} - {question_title} - {question_data}-{question_type}
         </span>

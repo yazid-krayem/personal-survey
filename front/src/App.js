@@ -7,10 +7,14 @@ import About from './Components/About';
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { withRouter } from 'react-router-dom';
-
-
-
+import { pause, makeRequestUrl } from "./utils.js";
 import './App.css'
+
+
+
+
+const makeUrl = (path, params) =>
+  makeRequestUrl(`http://localhost:8080/${path}`, params);
 
 class App extends Component {
   
@@ -23,7 +27,10 @@ class App extends Component {
     question_type:'',
     question_data:'',
     error_message: "",
-    isLoading: false
+    isLoading: false,
+    token: null,
+    nick: null,
+
   }
 
   async componentDidMount() {
@@ -39,7 +46,8 @@ class App extends Component {
       return; // do nothing, no need to reload a contact we already have
     }
     try {
-      const response = await fetch(`http://localhost:8080/questions/get/${id}`);
+      const url = makeUrl(`questions/get/${id}`)
+      const response = await fetch(url)
       const answer = await response.json();
       if (answer.success) {
         // add the user to the current list of contacts
@@ -56,9 +64,8 @@ class App extends Component {
 
   deleteQuestion = async question_id => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/questions/delete/${question_id}`
-      );
+      const url = makeUrl(`questions/delete/${question_id}`)
+      const response = await fetch(url);
       const answer = await response.json();
       if (answer.success) {
         // remove the user from the current list of users
@@ -86,9 +93,13 @@ updateQuestion = async (question_id, props) => {
         `you need at least something  `
       );
     }
-    const response = await fetch(
-      `http://localhost:8080/questions/update/${question_id}?question_title=${props.question_title}&question_type=${props.question_type}&question_data=${props.question_data}`
-    );
+    const url = makeUrl(`questions/update/${question_id}`,{
+      question_title:props.question_title,
+      question_type:props.question_type,
+      question_data:props.question_data,
+      token:this.state.token
+    })
+    const response = await fetch(url);
     const answer = await response.json();
     if (answer.success) {
       // we update the user, to reproduce the database changes:
@@ -130,9 +141,13 @@ createQuestion = async props => {
       );
     }
     const { question_title,question_type,question_data } = props;
-    const response = await fetch(
-      `http://localhost:8080/question/add?question_title=${question_title}&question_type=${question_type}&question_data=${question_data}`
-    );
+    const url = makeUrl(`question/add`,{
+      question_title:props.question_title,
+      question_type:props.question_type,
+      question_data:props.question_data,
+      token:this.state.token
+    })
+    const response = await fetch(url);
     const answer = await response.json();
     if (answer.success) {
       const question_id = answer.result;
@@ -156,9 +171,8 @@ question_id
   //All
   getAllQuestions = async order => {
     try {
-      const response = await fetch(
-        `//localhost:8080/questions/list`
-      );
+      const url = makeUrl(`questions/list`)
+      const response = await fetch(url);
       const answer = await response.json();
       if (answer.success) {
         const question_list = answer.result;
@@ -187,12 +201,7 @@ question_id
     this.createQuestion({ question_title,  question_type,question_data });
     // empty
     this.setState({ question_title:'',question_type:'',question_data:'' });
-    console.log('imhere')
-    // if(this.state.question_id===''){
-    //   return this.getAllQuestions()
-    // }
-  
-   
+
   };
   SubmitQuestions = e =>{
     // e.preventDefault();
@@ -224,8 +233,10 @@ change = ()=>{
             updateQuestion={this.updateQuestion}
             deleteQuestion={this.deleteQuestion}
           />
+          
         ))}
-        <button onClick={this.change}>submit</button>
+                  <button className="submit" onClick={this.change}>submit</button>
+
         </form>
 <form className="third" onSubmit={this.onSubmit}>
           <input
@@ -247,8 +258,7 @@ change = ()=>{
           </select>
          
           <div>
-            <input type="submit" value="ok" />
-            <input type="reset" value="cancel" className="button" />
+            <input type="submit" value="ADD" />
           </div>
           </form>
 
@@ -257,11 +267,92 @@ change = ()=>{
       </div>
     )
   }
+  login = async (username, password) => {
+    try {
+      const url = makeUrl(`login`, {
+        username,
+        password,
+        token: this.state.token
+      });
+      const response = await fetch(url);
+      const answer = await response.json();
+      if (answer.success) {
+        const { token, nick } = answer.result;
+        this.setState({ token, nick });
+        toast(`successful login`);
+      } else {
+        this.setState({ error_message: answer.message });
+        toast.error(answer.message);
+      }
+    } catch (err) {
+      this.setState({ error_message: err.message });
+      toast.error(err.message);
+    }
+  };
+  logout = async token => {
+    try {
+      const url = makeUrl(`logout`, { token: this.state.token });
+      const response = await fetch(url);
+      const answer = await response.json();
+      if (answer.success) {
+        this.setState({ token: null, nick: null });
+        toast(`successful logout`);
+      } else {
+        this.setState({ error_message: answer.message });
+        toast.error(answer.message);
+      }
+    } catch (err) {
+      this.setState({ error_message: err.message });
+      toast.error(err.message);
+    }
+  };
+  getPersonalPageData = async () => {
+    try {
+      const url = makeUrl(`mypage`, { token: this.state.token });
+      const response = await fetch(url);
+      const answer = await response.json();
+      if (answer.success) {
+        const message = answer.result;
+        // we should see: "received from the server: 'ok, user <username> has access to this page'"
+        toast(`received from the server: '${message}'`);
+      } else {
+        this.setState({ error_message: answer.message });
+        toast.error(`error message received from the server: ${answer.message}`);
+      }
+    } catch (err) {
+      this.setState({ error_message: err.message });
+      toast.error(err.message);
+    }
+  };
+//router
+renderContent() {
+  if (this.state.isLoading) {
+    return <p>loading...</p>;
+  }
+  return (
+    <Switch>
+    <Route exact path="/"  component={this.surveyFormat}  />
+    <Route  path="/About" component={About} />
+    <Route  path="/link" component={Link} />
+    <Route render={()=><div>not found!</div>}/>
+
+   
+  </Switch>
+
+  );
+}
+
   render() {
     return (
       <div>
-      
+     
+
         <NavBar />
+       
+          {this.renderContent()}
+<div>
+         
+            </div>
         <div className="home"> 
       <br />    
 <br />
@@ -274,15 +365,7 @@ change = ()=>{
     
 
 
-    <Switch>
-      <Route exact path="/"  component={this.surveyFormat}  />
-      <Route  path="/About" component={About} />
-      <Route  path="/link" component={Link} />
-      <Route render={()=><div>not found!</div>}/>
-
-     
-    </Switch>
-  
+   
       </div>
       </div>
     );

@@ -1,4 +1,9 @@
 import React, { Component} from 'react';
+import { pause, makeRequestUrl } from "../utils.js";
+
+
+const makeUrl = (path, params) =>
+  makeRequestUrl(`http://localhost:8080/${path}`, params);
 
 class Link extends Component {
 state={
@@ -8,11 +13,11 @@ state={
 async componentDidMount() {
   await this.innerQuestionsAnswers();
  }
+  
  innerQuestionsAnswers = async order => {
   try {
-    const response = await fetch(
-      `//localhost:8080/inner`
-    );
+    const url = makeUrl('inner')
+    const response = await fetch(url);
     const answer = await response.json();
     if (answer.success) {
       const inner = answer.result;

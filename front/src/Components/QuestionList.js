@@ -1,11 +1,17 @@
 import React from 'react';
+import { pause, makeRequestUrl } from "../utils.js";
+
+
+const makeUrl = (path, params) =>
+  makeRequestUrl(`http://localhost:8080/${path}`, params);
 
 
 export default class QuestionList extends React.Component {
   state = {
     editMode: false,
     answer_text:'',
-    answer_list:[]
+    answer_list:[],
+    user_id:1
   };
   async componentDidMount() {
     await this.getAllAnswers();
@@ -13,9 +19,8 @@ export default class QuestionList extends React.Component {
    }
   getAllAnswers = async order => {
     try {
-      const response = await fetch(
-        `//localhost:8080/answers/list`
-      );
+      const url = makeUrl=(`answers/list`)
+      const response = await fetch(url);
       const answer = await response.json();
       if (answer.success) {
         const answer_list = answer.result;
@@ -36,10 +41,12 @@ export default class QuestionList extends React.Component {
         );
       }
       const { answer_text,question_id } = props;
-      const user_id=1
-      const response = await fetch(
-        `http://localhost:8080/answer/add?answer_text=${answer_text}&question_id=${question_id}&user_id=${user_id}`
-      );
+      const url = makeUrl(`answer/add`,{
+        answer_text:props.answer_text,
+        question_id:props.question_id,
+        user_id:this.state.user_id
+      })
+      const response = await fetch(url);
 
       const answer = await response.json();
       if (answer.success) {
