@@ -124,7 +124,9 @@ createQuestion = async props => {
   try {
     if (!props || !(props.question_title && props.question_type && props.question_data )) {
       throw new Error(
-        `errrrrrrrrrrrrrrrrrrrrror `
+        `errrrrrif(this.state.question_id===''){
+    //   return this.getAllQuestions()
+    // }rrrrrrrrrrrrrrrror `
       );
     }
     const { question_title,question_type,question_data } = props;
@@ -134,9 +136,11 @@ createQuestion = async props => {
     const answer = await response.json();
     if (answer.success) {
       const question_id = answer.result;
-      const question = { question_title,question_type,question_data, question_id };
+      const question = { question_title,question_type,question_data, id:question_id };
+      this.setState({question_id:question_id});
       const question_list = [...this.state.question_list, question];
       this.setState({ question_list });
+      console.log(question, question_list)
       
     } else {
       this.setState({ error_message: answer.message });
@@ -147,7 +151,7 @@ createQuestion = async props => {
   }
 };
 
-
+question_id
 
   //All
   getAllQuestions = async order => {
@@ -178,11 +182,17 @@ createQuestion = async props => {
   }
   onSubmit = evt => {
     evt.preventDefault();
-    const { question_title, question_type,question_data } = this.state;
+    const { question_title, question_type,question_data, } = this.state;
     // add the question 
     this.createQuestion({ question_title,  question_type,question_data });
     // empty
     this.setState({ question_title:'',question_type:'',question_data:'' });
+    console.log('imhere')
+    // if(this.state.question_id===''){
+    //   return this.getAllQuestions()
+    // }
+  
+   
   };
   SubmitQuestions = e =>{
     // e.preventDefault();
