@@ -8,6 +8,8 @@ import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { withRouter } from 'react-router-dom';
 import { pause, makeRequestUrl } from "./utils.js";
+import * as auth0Client from './auth';
+
 import './App.css'
 
 
@@ -30,11 +32,29 @@ class App extends Component {
     isLoading: false,
     token: null,
     nick: null,
+    checkingSession: true
+
+
 
   }
 
   async componentDidMount() {
     await this.getAllQuestions();
+    if (this.props.location.pathname === "/callback") {
+      this.setState({checkingSession:false});
+      return;
+    }
+    try {
+      await auth0Client.silentAuth();
+      await this.getPersonalPageData(); // get the data from our server
+      this.forceUpdate();
+    } catch (err) {
+      if (err.error !== "login_required") {
+        console.log(err.error);
+      }
+    }
+    this.setState({checkingSession:false});
+
    }
    
   getQuestion = async id => {
@@ -267,45 +287,36 @@ change = ()=>{
       </div>
     )
   }
-  login = async (username, password) => {
-    try {
-      const url = makeUrl(`login`, {
-        username,
-        password,
-        token: this.state.token
-      });
-      const response = await fetch(url);
-      const answer = await response.json();
-      if (answer.success) {
-        const { token, nick } = answer.result;
-        this.setState({ token, nick });
-        toast(`successful login`);
-      } else {
-        this.setState({ error_message: answer.message });
-        toast.error(answer.message);
-      }
-    } catch (err) {
-      this.setState({ error_message: err.message });
-      toast.error(err.message);
+  renderUser() {
+    const isLoggedIn = auth0Client.isAuthenticated();
+    if (isLoggedIn) {
+      // user is logged in
+      return this.renderUserLoggedIn();
+    } else {
+      return this.renderUserLoggedOut();
     }
-  };
-  logout = async token => {
-    try {
-      const url = makeUrl(`logout`, { token: this.state.token });
-      const response = await fetch(url);
-      const answer = await response.json();
-      if (answer.success) {
-        this.setState({ token: null, nick: null });
-        toast(`successful logout`);
-      } else {
-        this.setState({ error_message: answer.message });
-        toast.error(answer.message);
-      }
-    } catch (err) {
-      this.setState({ error_message: err.message });
-      toast.error(err.message);
-    }
-  };
+  }
+  renderUserLoggedOut() {
+    return <button onClick={auth0Client.signIn}>Sign In</button>;
+  }
+  renderUserLoggedIn() {
+    const nick = auth0Client.getProfile().name;
+    return (
+      <div>
+        Hello, {nick}!{" "}
+        <button
+          onClick={() => {
+            auth0Client.signOut();
+            this.setState({});
+          }}
+        >
+          logout
+        </button>
+      </div>
+    );
+  }
+
+
   getPersonalPageData = async () => {
     try {
       const url = makeUrl(`mypage`, { token: this.state.token });
@@ -334,13 +345,35 @@ renderContent() {
     <Route exact path="/"  component={this.surveyFormat}  />
     <Route  path="/About" component={About} />
     <Route  path="/link" component={Link} />
+    
     <Route render={()=><div>not found!</div>}/>
 
    
   </Switch>
-
   );
 }
+isLogging = false;
+login = async () => {
+  if (this.isLogging === true) {
+    return;
+  }
+  this.isLogging = true;
+  try {
+    await auth0Client.handleAuthentication();
+    const name = auth0Client.getProfile().name; // get the data from Auth0
+    await this.getPersonalPageData(); // get the data from our server
+    toast(`${name} is logged in`);
+    this.props.history.push("/profile");
+  } catch (err) {
+    this.isLogging = false
+    toast.error(`error from the server: ${err.message}`);
+  }
+};
+handleAuthentication = () => {
+  this.login();
+  return <p>wait...</p>;
+};
+
 
   render() {
     return (

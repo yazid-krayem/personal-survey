@@ -6,6 +6,7 @@ class App extends Component {
     question_list : [],
     question:''
   }
+  
   componentDidMount(){
     const getList = async () =>{
       const respone =await fetch('//localhost:8080/questions/list')

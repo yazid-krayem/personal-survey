@@ -2,6 +2,7 @@ import initializeDatabase from './database/question'
 import { authenticateUser, logout, isLoggedIn } from './auth'
 
 
+
 import app from './app'
 const start = async () => {
   const controller = await initializeDatabase();
@@ -138,12 +139,11 @@ const start = async () => {
     }
   });
   //Auth 
-  app.get('/login', authenticateUser)
-  app.get('/logout', logout)
   app.get('/mypage', isLoggedIn, ( req, res ) => {
-    const username = req.user.username
+    const username = req.user.name
     res.send({success:true, result: 'ok, user '+username+' has access to this page'})
   })
+
 
   // ERROR
   app.use((err, req, res, next) => {
