@@ -11,6 +11,7 @@ const initializeDatabase = async () =>{
    * @param {object} props an object with keys `question_title`,`question_type`, `question_data`
    * @returns {number} the id of the created question (or an error if things went wrong) 
    */
+  
 
   const createQuestion = async (props) => {
     if(!props ){

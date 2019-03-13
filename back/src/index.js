@@ -11,7 +11,6 @@ const start = async () => {
 
    // CREATE
    app.get("/question/add",isLoggedIn, async (req, res, next) => {
-     console.log(req.user)
     try {
       const { question_title , question_type ,question_data,survey_id } = req.query;
       const {sub: auth0_sub} = req.user;
@@ -216,6 +215,7 @@ app.get("/survey/questions/:id", async (req, res, next) => {
     next(e);
   }
 });
+//inner (survey question)
   // ERROR
   app.use((err, req, res, next) => {
     console.error(err)

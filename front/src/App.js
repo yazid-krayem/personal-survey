@@ -30,6 +30,7 @@ class App extends Component {
     answer_list:[],
     survey_list:[],
     survey_name:[],
+    survey_question:[],
     survey_id:'',
     question_id:'',
     question_title:'',
@@ -44,11 +45,17 @@ class App extends Component {
 
 
   }
+  async componentWillMount(){
+    const id  = 1
+
+    await this.getSurveyQuestions(id)
+  }
 
   async componentDidMount() {
     await this.getAllQuestions();
     await this.getUsersList()
     await this.getAllSurveys()
+    
 
     if (this.props.location.pathname === "/callback") {
       this.setState({ checkingSession: false });
@@ -63,7 +70,36 @@ class App extends Component {
     }
     this.setState({ checkingSession: false });
   }
-   
+ 
+  //get Survey Question query
+  getSurveyQuestions = async id => {
+    // check if we already have the contact
+    const previous_question = this.state.survey_question.find(
+      question => question.question_id === id
+    );
+    if (previous_question) {
+      return; // do nothing, no need to reload a contact we already have
+    }
+    try {
+      const url = makeUrl(`survey/questions/${id}`)
+      const response = await fetch(url,{
+        headers: { Authorization: `Bearer ${auth0Client.getIdToken()}`}
+      })
+      const answer = await response.json();
+      if (answer.success) {
+        // add the user to the current list of contacts
+        const question = answer.result;
+        const survey_question = [...this.state.survey_question, question];
+        this.setState({ survey_question });
+      } else {
+        this.setState({ error_message: answer.message });
+      }
+    } catch (err) {
+      this.setState({ error_message: err.message });
+    }
+  };
+
+  //get question
   getQuestion = async id => {
     // check if we already have the contact
     const previous_question = this.state.question_list.find(
@@ -176,26 +212,20 @@ createQuestion = async props => {
         
       );
     }
-    console.log(x);
-  debugger;
-    const x = this.state.survey_id;
-    
     const { question_title,question_type,question_data } = props;
     const url = makeUrl(`question/add`,{
       question_title:props.question_title,
       question_type:props.question_type,
       question_data:props.question_data,
-      survey_id:x,
       token:this.state.token
     })
-    debugger;
     const response = await fetch(url,{
       headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
     });
     const answer = await response.json();
     if (answer.success) {
       const question_id = answer.result;
-      const question = { question_title,question_type,question_data,x , id:question_id };
+      const question = { question_title,question_type,question_data, id:question_id };
       this.setState({question_id:question_id});
       const question_list = [...this.state.question_list, question];
       this.setState({ question_list });
@@ -261,7 +291,7 @@ createQuestion = async props => {
     // add the question 
     this.createQuestion({ question_title,  question_type,question_data,survey_id});
     // empty
-    this.setState({ question_title:'',question_type:'',question_data:''});
+    this.setState({ question_title:'',question_type:'',question_data:'',survey_id});
 
   };
  
@@ -445,6 +475,86 @@ getAllSurveys = async order => {
       this.setState({ error_message: err.message });
     }
   };
+  //get survey questions 
+mapping = ()=>{
+  const  question = this.state.survey_question;
+  const item = question[0]
+  if(item){
+    return item.map(x=><div>{x.question_title}</div>)
+  }
+}
+surveyQuestions =() =>{
+  const  question = this.state.survey_question;
+  const item = question[0]
+  console.log(item)
+  
+  const {error_message } = this.state;
+  return(
+    <div  className="survey">
+    
+    <div className="questions">
+    
+    <form onSubmit={this.SubmitQuestions}>
+       
+       <br />
+      {/* {question.map(question => (
+        <SurveyQuestions
+          key={question.id}
+          question_id={question.id}
+          question_data={question.question_data}
+          question_title={question.question_title}
+          question_type={question.question_type}
+          author_id={question.author_id}
+          updateQuestion={this.updateQuestion}
+          deleteQuestion={this.deleteQuestion}
+        />
+        
+      ))} */}
+         {/* { Object.keys(question).map(function (key) {
+           var item = question[key];
+           return (
+             <div>
+               {item.question_title}
+            </div> */}
+      {/* {this.item ? Object.keys(item).map(x=><div>{x.question_title}</div>) :<p>2</p>} */}
+      {this.mapping()}
+      </form>
+      </div>
+      <div className="addQuestion">
+      <br />
+<form className="third" onSubmit={this.onSubmit}>
+        <input
+        id="test"
+          type="text"
+          placeholder="question"
+          onChange={evt => this.setState({ question_title: evt.target.value })}
+          value={this.question_title}
+        />
+        <input type="text"
+                  id="test"getPersonalPageData
+          placeholder ="question_data"
+          onChange={evt => this.setState({ question_data: evt.target.value })}
+          value={this.question_data}
+        />
+        <select id="option" onChange={evt => this.setState({ question_type: evt.target.value })}
+          value={this.question_type}>
+          <option>Question-Type</option>
+          <option>radio</option>
+          <option>text</option>
+        </select>
+       
+        <div>
+          <input type="submit" value="ADD" />
+        </div>
+        </form>
+        <hr />
+        <button className="submit" onClick={this.change}>Save Survey</button>
+
+        </div>
+
+    </div>
+  )
+}
 //router
 renderContent() {
   if (this.state.isLoading) {
@@ -453,7 +563,7 @@ renderContent() {
   return (
     <Switch>
     <Route  path="/" exact  component={this.surveyCreate}  />
-    <Route  path="/survey" exact  component={this.surveyFormat}  />
+    <Route  path="/survey" exact  component={this.surveyQuestions}  />
     <Route  path="/user-side" component={About} />
     <Route  path="/data-collection" component={Link} />
     <Route  path="/profile" component={Profile}/>
