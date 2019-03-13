@@ -1,5 +1,8 @@
 import React from 'react';
-import './questions.css'
+import './questions.css';
+import * as auth0Client from "../auth";
+
+
 
 export default class Question extends React.Component {
   state = {
@@ -16,25 +19,35 @@ export default class Question extends React.Component {
   }
   
   renderViewMode() {
-    const { question_id, question_title,question_data, question_type, deleteQuestion } = this.props;
+    const { question_id, question_title,question_data, question_type, deleteQuestion,author_id } = this.props;
+    const isLoggedIn = auth0Client.isAuthenticated();
+    const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
+    const is_author = author_id === current_logged_in_user_id
+    console.log(author_id, current_logged_in_user_id)
+
     
     return (
       <div>
 
         <div className="questions">
         <span>
-          {question_id} - {question_title} - {question_data}-{question_type}
+          {question_id} - {question_title} 
         </span>
-        <button onClick={this.toggleEditMode} className="success">
-          edit
-        </button>
-        <button onClick={() => deleteQuestion(question_id)} className="warning">
-          x
-        </button>
-        </div>
-        <div>
-        </div>
-        
+        { is_author && isLoggedIn ?
+          <div>
+              <button onClick={this.toggleEditMode} className="success">
+                edit
+              </button>
+              <button onClick={() => deleteQuestion(question_id)} className="error">
+                x
+              </button>
+          </div>
+        : false
+        }
+
+
+       
+      </div>
       </div>
     );
   }

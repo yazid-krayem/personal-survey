@@ -85,7 +85,7 @@ export default class QuestionList extends React.Component {
           onChange={evt => this.setState({ answer_text: evt.target.value })}
           value={this.state.answer_text}
         />
-          <button onClick={this.onSave}>save</button>
+          <button  onClick={this.onSave}>save</button>
           
           </form>
        
@@ -106,8 +106,9 @@ export default class QuestionList extends React.Component {
 
     this.createAnswer({answer_text , question_id,user_id });
     this.toggleEditMode();
+    
   };
-
+ 
   render() {
     
     const { editMode } = this.state;

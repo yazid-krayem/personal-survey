@@ -1,6 +1,4 @@
-.questions{
-    float: left;
-    width: 65%;
-    overflow: hidden;
-  
-}
+#button{
+   margin-right: 10px;
+    box-sizing: border-box;
+  }

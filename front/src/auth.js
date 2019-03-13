@@ -87,6 +87,7 @@ export const silentAuth = () => {
   return new Promise((resolve, reject) => {
     auth0Client.checkSession({}, (err, authResult) => {
       if (err){
+        console.log("hereeeee", err)
         return reject(err);
       }
       setSession(authResult);

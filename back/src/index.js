@@ -10,10 +10,13 @@ const start = async () => {
   app.get("/", (req, res, next) => res.send("ok"));
 
    // CREATE
-   app.get("/question/add", async (req, res, next) => {
+   app.get("/question/add",isLoggedIn, async (req, res, next) => {
+     console.log(req.user)
     try {
       const { question_title , question_type ,question_data } = req.query;
-      const result = await controller.createQuestion({ question_title,question_type,question_data });
+      const {sub: auth0_sub} = req.user;
+      //const auth0_sub = sub;
+      const result = await controller.createQuestion({ question_title,question_type,question_data, auth0_sub });
       res.json({ success: true, result });
     } catch (e) {
       next(e);
@@ -32,7 +35,7 @@ const start = async () => {
   });
 
   // DELETE
-  app.get("/questions/delete/:id", async (req, res, next) => {
+  app.get("/questions/delete/:id",isLoggedIn, async (req, res, next) => {
     try {
       const { id } = req.params;
       const result = await controller.deleteQuestion(id);
@@ -43,7 +46,7 @@ const start = async () => {
   });
 
   // UPDATE
-  app.get("/questions/update/:id", async (req, res, next) => {
+  app.get("/questions/update/:id",isLoggedIn, async (req, res, next) => {
     try {
       const { id } = req.params;
       const { question_title,question_type,question_data } = req.query;
@@ -70,7 +73,7 @@ const start = async () => {
 //////////////////////////////////////
 
   // CREATE answer
-  app.get("/answer/add", async (req, res, next) => {
+  app.get("/answer/add", isLoggedIn, async (req, res, next) => {
     try {
       const { question_id, answer_text,user_id } = req.query;
       const result = await controller.createAnswer({ answer_text,question_id,user_id  });
@@ -95,7 +98,7 @@ const start = async () => {
 
 
   // DELETE answer
-  app.get("/answer/delete/:id", async (req, res, next) => {
+  app.get("/answer/delete/:id", isLoggedIn, async (req, res, next) => {
     try {
       const { id } = req.params;
       const result = await controller.deleteAnswer(id);
@@ -106,7 +109,7 @@ const start = async () => {
   });
 
   // UPDATE answer
-  app.get("/answers/update/:id", async (req, res, next) => {
+  app.get("/answers/update/:id", isLoggedIn, async (req, res, next) => {
     try {
       const { id } = req.params;
       const { text } = req.query;
@@ -127,6 +130,26 @@ const start = async () => {
       next(e);
     }
   });
+  //create User 
+  app.get("/user/add", isLoggedIn, async (req, res, next) => {
+    try {
+      const { user_name,auth0_sub } = req.query;
+      const result = await controller.createUser({ auth0_sub,user_name  });
+      res.json({ success: true, result });
+    } catch (e) {
+      next(e);
+    }
+  });
+  //All useres
+  app.get("/users/list", async (req, res, next) => {
+    try {
+      const { order } = req.query;
+      const answers = await controller.getUsersList(order);
+      res.json({ success: true, result: answers });
+    } catch (e) {
+      next(e);
+    }
+  });
 
   //inner join 
   app.get("/inner", async (req, res, next) => {
@@ -139,9 +162,17 @@ const start = async () => {
     }
   });
   //Auth 
-  app.get('/mypage', isLoggedIn, ( req, res ) => {
-    const username = req.user.name
-    res.send({success:true, result: 'ok, user '+username+' has access to this page'})
+  app.get('/mypage', isLoggedIn, async ( req, res, next ) => {
+    try{
+      const { order, desc, limit, start } = req.query;
+      const { sub: auth0_sub, user_name} = req.user
+      const user = await controller.createUserIfNotExists({auth0_sub, user_name})
+      const contacts = await controller.getQuestionList({order, desc, limit, start, author_id:auth0_sub})
+      user.contacts = contacts
+      res.json({ success: true, result: user });
+    }catch(e){
+      next(e)
+    }
   })
 
 

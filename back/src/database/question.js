@@ -16,9 +16,9 @@ const initializeDatabase = async () =>{
     if(!props ){
       throw new Error(`you must provide a name and an type`)
     }
-    const { question_title , question_type ,question_data} = props
+    const { question_title , question_type ,question_data, auth0_sub} = props
     try{
-      const result = await db.run(SQL`INSERT INTO question (question_title,question_type,question_data) VALUES (${question_title},${question_type},${question_data})`);
+      const result = await db.run(SQL`INSERT INTO question (question_title,question_type,question_data,auth0_sub) VALUES (${question_title},${question_type},${question_data}, ${auth0_sub})`);
       const id = result.stmt.lastID
       return id
     }catch(e){
@@ -215,6 +215,35 @@ const initializeDatabase = async () =>{
       throw new Error(`couldn't retrieve answer: `+e.message)
    }
    }
+   const createUserIfNotExists = async props => {
+    const { auth0_sub, user_name } = props;
+    const answer = await db.get(
+      SQL`SELECT user_id FROM user WHERE auth0_sub = ${auth0_sub}`
+    );
+    if (!answer) {
+      await createUser(props);
+      return { ...props, firstTime: true };
+    }
+    return props;
+  };
+
+  const getUserIdentities = async user_name => {
+    const user = await db.all(
+      SQL`SELECT * FROM user WHERE user_name = ${user_name}`
+    );
+    const providers = user.map(user => {
+      const { auth0_sub } = user;
+      const [providerType, _1] = auth0_sub.split("|");
+      const [providerName, _2] = providerType.split("-");
+      return {
+        name: providerName,
+        sub: auth0_sub
+      };
+    });
+    return providers;
+  };
+
+
    const innerQuestionsAnswers = async(orderBy) =>{
     try{
         let statement = `SELECT *
@@ -233,6 +262,37 @@ const initializeDatabase = async () =>{
    throw new Error(`couldn't retrieve questions: `+e.message)
 }
 }
+//CREATE USERS
+const createUser = async (props) => {
+  if(!props  ){
+    throw new Error(` usersssss`)
+  }
+  const { user_name,auth0_sub } = props;
+  try{
+    const result = await db.run(SQL`INSERT INTO user (user_name,auth0_sub) VALUES (${user_name},${auth0_sub})`);
+    const id = result.stmt.lastID
+    return id
+  }catch(e){
+    throw new Error(`couldn't insert this combination: `+e.message)
+  }
+}
+// all useres
+const getUsersList = async(orderBy) =>{
+  try{
+      let statement = `SELECT user_id AS id , user_name , auth0_sub FROM user `
+      switch(orderBy){
+       case 'user_name': statement+= ` ORDER BY user_name`; break;
+       default: break
+   }
+   const rows = await db.all(statement)
+ if(!rows.length){
+   throw new Error(`no rows found`)
+  }
+  return rows
+}catch(e){
+ throw new Error(`couldn't retrieve users: `+e.message)
+}
+}
 const controller = {
     getQuestionList,
     createQuestion,
@@ -244,7 +304,11 @@ const controller = {
     createAnswer,
     updateAnswer,
     deleteAnswer,
-    innerQuestionsAnswers
+    innerQuestionsAnswers,
+    createUserIfNotExists,
+    getUserIdentities,
+    createUser,
+    getUsersList
 }
 return controller
 }

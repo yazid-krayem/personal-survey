@@ -84,7 +84,7 @@ class About extends Component {
 
          <form>
           <div>
-          <button onClick={this.change}>mm</button>
+          <button onClick={this.change}>submit</button>
           </div>
           </form>
 

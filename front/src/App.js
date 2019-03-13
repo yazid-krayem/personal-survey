@@ -11,6 +11,7 @@ import { pause, makeRequestUrl } from "./utils.js";
 import * as auth0Client from './auth';
 
 import './App.css'
+import IfAuthenticated from './IfAuthenticated';
 
 
 
@@ -23,6 +24,7 @@ class App extends Component {
   state={
     toggle: false,
     question_list: [],
+    user_list:[],
     answer_list:[],
     question_id:'',
     question_title:'',
@@ -32,30 +34,30 @@ class App extends Component {
     isLoading: false,
     token: null,
     nick: null,
-    checkingSession: true
-
+    checkingSession: true,
+        user:''
 
 
   }
 
   async componentDidMount() {
     await this.getAllQuestions();
+    await this.getUsersList()
+
     if (this.props.location.pathname === "/callback") {
-      this.setState({checkingSession:false});
+      this.setState({ checkingSession: false });
       return;
     }
     try {
       await auth0Client.silentAuth();
       await this.getPersonalPageData(); // get the data from our server
-      this.forceUpdate();
     } catch (err) {
       if (err.error !== "login_required") {
-        console.log(err.error);
+        console.log("here.....",err.error);
       }
     }
-    this.setState({checkingSession:false});
-
-   }
+    this.setState({ checkingSession: false });
+  }
    
   getQuestion = async id => {
     // check if we already have the contact
@@ -67,7 +69,9 @@ class App extends Component {
     }
     try {
       const url = makeUrl(`questions/get/${id}`)
-      const response = await fetch(url)
+      const response = await fetch(url,{
+        headers: { Authorization: `Bearer ${auth0Client.getIdToken()}`}
+      })
       const answer = await response.json();
       if (answer.success) {
         // add the user to the current list of contacts
@@ -85,7 +89,9 @@ class App extends Component {
   deleteQuestion = async question_id => {
     try {
       const url = makeUrl(`questions/delete/${question_id}`)
-      const response = await fetch(url);
+      const response = await fetch(url,{
+        headers: { Authorization: `Bearer ${auth0Client.getIdToken()}`}
+      });
       const answer = await response.json();
       if (answer.success) {
         // remove the user from the current list of users
@@ -119,7 +125,12 @@ updateQuestion = async (question_id, props) => {
       question_data:props.question_data,
       token:this.state.token
     })
-    const response = await fetch(url);
+    const response = await fetch(url,{
+      method:'POST', 
+      
+        headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
+
+    });
     const answer = await response.json();
     if (answer.success) {
       // we update the user, to reproduce the database changes:
@@ -167,7 +178,9 @@ createQuestion = async props => {
       question_data:props.question_data,
       token:this.state.token
     })
-    const response = await fetch(url);
+    const response = await fetch(url,{
+      headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
+    });
     const answer = await response.json();
     if (answer.success) {
       const question_id = answer.result;
@@ -206,6 +219,24 @@ question_id
     }
   };
 
+  //All users
+  getUsersList = async order => {
+    try {
+      const url = makeUrl(`users/list`)
+      const response = await fetch(url);
+      const answer = await response.json();
+      if (answer.success) {
+        const user_list = answer.result;
+        this.setState({ user_list });
+      } else {
+        this.setState({ error_message: answer.message });
+      }
+      
+    } catch (err) {
+      this.setState({ error_message: err.message });
+    }
+  };
+
   handleChange = (e) =>{
     const value = e.target.value
     this.setState({question:value})
@@ -223,26 +254,25 @@ question_id
     this.setState({ question_title:'',question_type:'',question_data:'' });
 
   };
-  SubmitQuestions = e =>{
-    // e.preventDefault();
-    // this.context.router.history.push(`/About`);
-    
-    // this.props.location.SubmitQuestions();
-
-  }
+ 
 componentDidCatch(){
   this.SubmitQuestions()
 }
 change = ()=>{
   this.props.history.push('/About')
 }
+
   surveyFormat =() =>{
     const  question = this.state.question_list;
     const {error_message } = this.state;
     return(
-      <div className="survey">
+      <div  className="survey">
+      
+      <div className="questions">
+      <input id="title" placeholder="Title"/>
       <form onSubmit={this.SubmitQuestions}>
          {error_message ? <p> ERROR! {error_message}</p> : false}
+         <br />
         {question.map(question => (
           <Question
             key={question.id}
@@ -250,29 +280,34 @@ change = ()=>{
             question_data={question.question_data}
             question_title={question.question_title}
             question_type={question.question_type}
+            author_id={question.author_id}
             updateQuestion={this.updateQuestion}
             deleteQuestion={this.deleteQuestion}
           />
           
         ))}
-                  <button className="submit" onClick={this.change}>submit</button>
 
         </form>
+        </div>
+        <div className="addQuestion">
+        <br />
 <form className="third" onSubmit={this.onSubmit}>
           <input
+          id="test"
             type="text"
             placeholder="question"
             onChange={evt => this.setState({ question_title: evt.target.value })}
             value={this.question_title}
           />
           <input type="text"
+                    id="test"getPersonalPageData
             placeholder ="question_data"
             onChange={evt => this.setState({ question_data: evt.target.value })}
             value={this.question_data}
           />
-          <select onChange={evt => this.setState({ question_type: evt.target.value })}
+          <select id="option" onChange={evt => this.setState({ question_type: evt.target.value })}
             value={this.question_type}>
-            <option></option>
+            <option>Question-Type</option>
             <option>radio</option>
             <option>text</option>
           </select>
@@ -281,12 +316,16 @@ change = ()=>{
             <input type="submit" value="ADD" />
           </div>
           </form>
+          <hr />
+          <button className="submit" onClick={this.change}>Save Survey</button>
 
-
+          </div>
 
       </div>
     )
   }
+ 
+ 
   renderUser() {
     const isLoggedIn = auth0Client.isAuthenticated();
     if (isLoggedIn) {
@@ -320,7 +359,10 @@ change = ()=>{
   getPersonalPageData = async () => {
     try {
       const url = makeUrl(`mypage`, { token: this.state.token });
-      const response = await fetch(url);
+      const response = await fetch(url,{
+        headers: { Authorization: `Bearer ${auth0Client.getIdToken()}`}
+
+      });
       const answer = await response.json();
       if (answer.success) {
         const message = answer.result;
@@ -342,10 +384,10 @@ renderContent() {
   }
   return (
     <Switch>
-    <Route exact path="/"  component={this.surveyFormat}  />
+    <Route  path="/" exact  component={this.surveyFormat}  />
     <Route  path="/About" component={About} />
     <Route  path="/link" component={Link} />
-    
+    <Route path = '/callback' render = {this.handleAuthentication}/>
     <Route render={()=><div>not found!</div>}/>
 
    
@@ -354,6 +396,7 @@ renderContent() {
 }
 isLogging = false;
 login = async () => {
+  console.log(this.isLogging)
   if (this.isLogging === true) {
     return;
   }
@@ -361,9 +404,10 @@ login = async () => {
   try {
     await auth0Client.handleAuthentication();
     const name = auth0Client.getProfile().name; // get the data from Auth0
+    console.log("profile",auth0Client.getProfile())
     await this.getPersonalPageData(); // get the data from our server
     toast(`${name} is logged in`);
-    this.props.history.push("/profile");
+    this.props.history.push("/");
   } catch (err) {
     this.isLogging = false
     toast.error(`error from the server: ${err.message}`);
@@ -371,34 +415,36 @@ login = async () => {
 };
 handleAuthentication = () => {
   this.login();
-  return <p>wait...</p>;
+  return <p>wait...{this.name}</p>;
 };
 
 
   render() {
+    const user_list = this.state.user_list
     return (
-      <div>
+      <div className="mainPage">
      
 
         <NavBar />
-       
+      
           {this.renderContent()}
 <div>
-         
+<br />
+       <br/>
             </div>
         <div className="home"> 
       <br />    
 <br />
 <br />
 <div>
-
+      <div>
+       
+      </div>
         </div>
- 
- 
     
 
 
-   
+
       </div>
       </div>
     );

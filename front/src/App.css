@@ -1,0 +1,71 @@
+
+.mainPage{
+width: 100%;
+height: 650px;
+background-color: #fff;
+flex-flow: row wrap;
+
+}
+.survey{
+    margin-top: 20px;
+    display: flex;
+    border: 1px solid #ccc;
+    position: relative;
+    background-color: #fff;
+}
+.questions{
+    flex: 0 0 60%;
+    border-right: 1px solid #ccc;
+
+}
+.addQuestion{
+    flex: 1;
+    padding: 0;
+    background-color: #fff;
+    padding-left: 10px;
+
+}
+input[type=text] {
+    width: 100%;
+    padding: 20px 20px;
+    margin: 12px 0;
+    box-sizing: border-box;
+    background-color: rgb(199, 198, 198);
+  }
+#select{
+    width: 100%;
+   
+    box-sizing: border-box;
+}
+
+#test{
+    width:360px;
+}
+#title{
+    width: 50%;
+    border: 1px rgb(199, 198, 198) solid;
+    border-top:none;
+    border-right:none;
+    border-left:none;  
+    margin-left: auto; 
+    margin-right: auto;
+    background-color: rgb(199, 198, 198);
+    
+}
+#title::placeholder{
+    text-align: center;
+    color:black;
+    font-size:22px;    
+}
+input[type=text]::placeholder{
+    text-align: center;
+    color: black;
+}
+#option{
+    font-weight: bold;
+    color: black;
+    background-color: rgb(199, 198, 198);
+}
+.test{
+    border: 1px black solid;
+}
