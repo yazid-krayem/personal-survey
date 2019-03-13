@@ -33,7 +33,6 @@ export default class Question extends React.Component {
         <span>
           {question_id} - {question_title} 
         </span>
-        { is_author && isLoggedIn ?
           <div>
               <button onClick={this.toggleEditMode} className="success">
                 edit
@@ -42,8 +41,7 @@ export default class Question extends React.Component {
                 x
               </button>
           </div>
-        : false
-        }
+        
 
 
        

@@ -343,6 +343,24 @@ const getUsersList = async(orderBy) =>{
  throw new Error(`couldn't retrieve users: `+e.message)
 }
 }
+//get questions by surveys
+     /**
+   * Retrieves a answer
+   * @param {number} id the id of the answer
+   * @returns {object} an object with `answer_text`, and `answer_id`, representing an answer, or an error 
+   */
+  const getQuestionsBySurvey = async (id) => {
+    try{
+      const answerList = await db.all(SQL`SELECT * FROM question WHERE survey_id= ${id};`);
+      const answer = answerList
+      if(!answer){
+        throw new Error(`answer ${id} not found`)
+      }
+      return answer
+    }catch(e){
+      throw new Error(`couldn't get the answer ${id}: `+e.message)
+    }
+  }
 const controller = {
     getQuestionList,
     createQuestion,
@@ -361,7 +379,8 @@ const controller = {
     getUsersList,
     createSurvey,
     getSurveysList,
-    innerSurveysandQuestions
+    innerSurveysandQuestions,
+    getQuestionsBySurvey
 }
 return controller
 }

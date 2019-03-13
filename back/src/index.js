@@ -153,8 +153,9 @@ const start = async () => {
   //create survey
   app.get("/survey/add", isLoggedIn, async (req, res, next) => {
     try {
-      const { survey_name,auth0_sub } = req.query;
-      const result = await controller.createUser({ auth0_sub,survey_name  });
+      const { survey_name } = req.query;
+      const {sub: auth0_sub} = req.user;
+      const result = await controller.createSurvey({ survey_name,auth0_sub  });
       res.json({ success: true, result });
     } catch (e) {
       next(e);
@@ -205,7 +206,16 @@ const start = async () => {
     }
   })
 
-
+//getQuestionsBySurvey
+app.get("/survey/questions/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const question = await controller.getQuestionsBySurvey(id);
+    res.json({ success: true, result: question });
+  } catch (e) {
+    next(e);
+  }
+});
   // ERROR
   app.use((err, req, res, next) => {
     console.error(err)

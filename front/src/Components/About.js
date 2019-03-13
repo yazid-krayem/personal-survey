@@ -40,8 +40,7 @@ class About extends Component {
           `errrrrrrrrrrrrrrrrrrrrror `
         );
       }
-      const { answer_text,question_id } = props;
-      const user_id=1
+      const { answer_text,question_id,user_id } = props;
       const response = await fetch(
         `http://localhost:8080/answer/add?answer_text=${answer_text}&question_id=${question_id}&user_id=${user_id}`
       );
