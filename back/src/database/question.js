@@ -16,7 +16,10 @@ const initializeDatabase = async () =>{
     if(!props ){
       throw new Error(`you must provide a name and an type`)
     }
-    const { question_title , question_type ,question_data, auth0_sub,survey_id} = props
+    
+    const { question_title , question_type ,question_data, auth0_sub,survey_id} = props;
+
+    console.log('survey_id =>',survey_id)
     try{
       const result = await db.run(SQL`INSERT INTO question (question_title,question_type,question_data,auth0_sub,survey_id) VALUES (${question_title},${question_type},${question_data}, ${auth0_sub},${survey_id})`);
       const id = result.stmt.lastID

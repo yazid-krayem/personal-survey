@@ -59,7 +59,6 @@ class App extends Component {
       await this.getPersonalPageData(); // get the data from our server
     } catch (err) {
       if (err.error !== "login_required") {
-        console.log("here.....",err.error);
       }
     }
     this.setState({ checkingSession: false });
@@ -177,24 +176,29 @@ createQuestion = async props => {
         
       );
     }
+    console.log(x);
+  debugger;
+    const x = this.state.survey_id;
+    
     const { question_title,question_type,question_data } = props;
     const url = makeUrl(`question/add`,{
       question_title:props.question_title,
       question_type:props.question_type,
       question_data:props.question_data,
+      survey_id:x,
       token:this.state.token
     })
+    debugger;
     const response = await fetch(url,{
       headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
     });
     const answer = await response.json();
     if (answer.success) {
       const question_id = answer.result;
-      const question = { question_title,question_type,question_data, id:question_id };
+      const question = { question_title,question_type,question_data,x , id:question_id };
       this.setState({question_id:question_id});
       const question_list = [...this.state.question_list, question];
       this.setState({ question_list });
-      console.log(question, question_list)
       
     } else {
       this.setState({ error_message: answer.message });
@@ -257,7 +261,7 @@ createQuestion = async props => {
     // add the question 
     this.createQuestion({ question_title,  question_type,question_data,survey_id});
     // empty
-    this.setState({ question_title:'',question_type:'',question_data:'',survey_id});
+    this.setState({ question_title:'',question_type:'',question_data:''});
 
   };
  
@@ -432,7 +436,6 @@ getAllSurveys = async order => {
         this.setState({survey_id:survey_id});
         const survey_list = [...this.state.survey_list, survey];
         this.setState({ survey_list });
-        console.log(survey, survey_list,auth0Client)
         
       } else {
         this.setState({ error_message: answer.message });
@@ -463,7 +466,6 @@ renderContent() {
 }
 isLogging = false;
 login = async () => {
-  console.log(this.isLogging)
   if (this.isLogging === true) {
     return;
   }
@@ -471,7 +473,6 @@ login = async () => {
   try {
     await auth0Client.handleAuthentication();
     const name = auth0Client.getProfile().name; // get the data from Auth0
-    console.log("profile",auth0Client.getProfile())
     await this.getPersonalPageData(); // get the data from our server
     toast(`${name} is logged in`);
     this.props.history.push("/");

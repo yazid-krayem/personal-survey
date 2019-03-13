@@ -1,10 +1,6 @@
 import React, { Component} from 'react';
 import { withRouter } from 'react-router-dom';
 import * as auth0Client from './auth';
-import { pause, makeRequestUrl } from "./utils.js";
-
-const makeUrl = (path, params) =>
-  makeRequestUrl(`http://localhost:8080/${path}`, params);
 
 
 

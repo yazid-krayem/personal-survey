@@ -13,10 +13,10 @@ const start = async () => {
    app.get("/question/add",isLoggedIn, async (req, res, next) => {
      console.log(req.user)
     try {
-      const { question_title , question_type ,question_data } = req.query;
+      const { question_title , question_type ,question_data,survey_id } = req.query;
       const {sub: auth0_sub} = req.user;
       //const auth0_sub = sub;
-      const result = await controller.createQuestion({ question_title,question_type,question_data, auth0_sub });
+      const result = await controller.createQuestion({ question_title,question_type,question_data, auth0_sub,survey_id });
       res.json({ success: true, result });
     } catch (e) {
       next(e);
