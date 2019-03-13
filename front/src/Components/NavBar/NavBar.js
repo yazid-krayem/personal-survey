@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import {Form,FormControl,Button, Navbar,Nav} from 'react-bootstrap';
 import {Link,withRouter} from 'react-router-dom';
 import IfAuthenticated from '../../IfAuthenticated';
+import * as auth0Client from '../../auth';
+
 class Header extends Component {
   
   render() {
@@ -17,12 +19,13 @@ class Header extends Component {
     </Form>
   </Navbar> */}      
           <div className="test">
-          <p>here</p>
           <Link to="/">Home</Link> |
           <Link to="/profile">profile</Link> |
           <IfAuthenticated>
             <Link to="/create">create</Link>
           </IfAuthenticated>
+          <button onClick={auth0Client.signOut}>sing out</button>
+          <button onClick={auth0Client.signIn}>sing in</button>
         </div>
 
   </div>
