@@ -16,9 +16,9 @@ const initializeDatabase = async () =>{
     if(!props ){
       throw new Error(`you must provide a name and an type`)
     }
-    const { question_title , question_type ,question_data, auth0_sub} = props
+    const { question_title , question_type ,question_data, auth0_sub,survey_id} = props
     try{
-      const result = await db.run(SQL`INSERT INTO question (question_title,question_type,question_data,auth0_sub) VALUES (${question_title},${question_type},${question_data}, ${auth0_sub})`);
+      const result = await db.run(SQL`INSERT INTO question (question_title,question_type,question_data,auth0_sub,survey_id) VALUES (${question_title},${question_type},${question_data}, ${auth0_sub},${survey_id})`);
       const id = result.stmt.lastID
       return id
     }catch(e){
@@ -262,6 +262,25 @@ const initializeDatabase = async () =>{
    throw new Error(`couldn't retrieve questions: `+e.message)
 }
 }
+//inner between surveys and questions
+const innerSurveysandQuestions = async(orderBy) =>{
+  try{
+      let statement = `SELECT *
+      FROM survey
+      INNER JOIN question on question.survey_id = survey.survey_id;`
+      switch(orderBy){
+       case 'survey_id': statement+= ` ORDER BY survey_id`; break;
+       default: break
+   }
+   const rows = await db.all(statement)
+ if(!rows.length){
+   throw new Error(`no rows found`)
+  }
+  return rows
+}catch(e){
+ throw new Error(`couldn't retrieve questions: `+e.message)
+}
+}
 //CREATE USERS
 const createUser = async (props) => {
   if(!props  ){
@@ -275,6 +294,37 @@ const createUser = async (props) => {
   }catch(e){
     throw new Error(`couldn't insert this combination: `+e.message)
   }
+}
+//create a survey 
+const createSurvey = async (props) => {
+  if(!props ){
+    throw new Error(`you must provide a Title`)
+  }
+  const { survey_name, auth0_sub} = props
+  try{
+    const result = await db.run(SQL`INSERT INTO survey (survey_name,auth0_sub) VALUES (${survey_name}, ${auth0_sub})`);
+    const id = result.stmt.lastID
+    return id
+  }catch(e){
+    throw new Error(`couldn't insert this combination: `+e.message)
+  }
+}
+// all surveys
+const getSurveysList = async(orderBy) =>{
+  try{
+      let statement = `SELECT survey_id AS id , survey_name , auth0_sub FROM survey `
+      switch(orderBy){
+       case 'survey_name': statement+= ` ORDER BY survey_name`; break;
+       default: break
+   }
+   const rows = await db.all(statement)
+ if(!rows.length){
+   throw new Error(`no rows found`)
+  }
+  return rows
+}catch(e){
+ throw new Error(`couldn't retrieve users: `+e.message)
+}
 }
 // all useres
 const getUsersList = async(orderBy) =>{
@@ -308,7 +358,10 @@ const controller = {
     createUserIfNotExists,
     getUserIdentities,
     createUser,
-    getUsersList
+    getUsersList,
+    createSurvey,
+    getSurveysList,
+    innerSurveysandQuestions
 }
 return controller
 }

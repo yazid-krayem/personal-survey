@@ -150,9 +150,28 @@ const start = async () => {
       next(e);
     }
   });
-
-  //inner join 
-  app.get("/inner", async (req, res, next) => {
+  //create survey
+  app.get("/survey/add", isLoggedIn, async (req, res, next) => {
+    try {
+      const { survey_name,auth0_sub } = req.query;
+      const result = await controller.createUser({ auth0_sub,survey_name  });
+      res.json({ success: true, result });
+    } catch (e) {
+      next(e);
+    }
+  });
+  //All surveys
+  app.get("/surveys/list", async (req, res, next) => {
+    try {
+      const { order } = req.query;
+      const answers = await controller.getSurveysList(order);
+      res.json({ success: true, result: answers });
+    } catch (e) {
+      next(e);
+    }
+  });
+  //inner join (questions and survey)
+  app.get("/inner/survey", async (req, res, next) => {
     try {
       const { order } = req.query;
       const answers = await controller.innerQuestionsAnswers(order);
@@ -161,6 +180,17 @@ const start = async () => {
       next(e);
     }
   });
+  //inner join (questions and answers)
+  app.get("/inner/question", async (req, res, next) => {
+    try {
+      const { order } = req.query;
+      const answers = await controller.innerQuestionsAnswers(order);
+      res.json({ success: true, result: answers });
+    } catch (e) {
+      next(e);
+    }
+  });
+
   //Auth 
   app.get('/mypage', isLoggedIn, async ( req, res, next ) => {
     try{
