@@ -16,7 +16,7 @@ async componentDidMount() {
   
  innerQuestionsAnswers = async order => {
   try {
-    const url = makeUrl('inner')
+    const url = makeUrl('inner/question')
     const response = await fetch(url);
     const answer = await response.json();
     if (answer.success) {

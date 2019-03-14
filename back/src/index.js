@@ -49,7 +49,8 @@ const start = async () => {
     try {
       const { id } = req.params;
       const { question_title,question_type,question_data } = req.query;
-      const result = await controller.updateQuestion(id, { question_title,question_type,question_data });
+      const {sub: auth0_sub} = req.user;
+      const result = await controller.updateQuestion(id, { question_title,question_type,question_data,auth0_sub });
       res.json({ success: true, result });
     } catch (e) {
       next(e);

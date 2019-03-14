@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { withRouter } from 'react-router-dom';
 import { pause, makeRequestUrl } from "./utils.js";
 import * as auth0Client from './auth';
-
+import SurveyQuestions from './SurveyQuestions'
 import './App.css'
 import IfAuthenticated from './IfAuthenticated';
 import Profile from './Components/Profile';
@@ -46,9 +46,10 @@ class App extends Component {
 
   }
   async componentWillMount(){
-    const id  = 1
-
-    await this.getSurveyQuestions(id)
+  const id = this.state.survey_id
+  await this.getSurveyQuestions(id)
+ 
+    
   }
 
   async componentDidMount() {
@@ -56,6 +57,7 @@ class App extends Component {
     await this.getUsersList()
     await this.getAllSurveys()
     
+   
 
     if (this.props.location.pathname === "/callback") {
       this.setState({ checkingSession: false });
@@ -74,12 +76,13 @@ class App extends Component {
   //get Survey Question query
   getSurveyQuestions = async id => {
     // check if we already have the contact
-    const previous_question = this.state.survey_question.find(
+    console.log("getting survey questions",this.state.survey_question)
+  /*   const previous_question = this.state.survey_question.find(
       question => question.question_id === id
     );
     if (previous_question) {
       return; // do nothing, no need to reload a contact we already have
-    }
+    } */
     try {
       const url = makeUrl(`survey/questions/${id}`)
       const response = await fetch(url,{
@@ -89,7 +92,8 @@ class App extends Component {
       if (answer.success) {
         // add the user to the current list of contacts
         const question = answer.result;
-        const survey_question = [...this.state.survey_question, question];
+        console.log("hello",question);
+        const survey_question =  question;
         this.setState({ survey_question });
       } else {
         this.setState({ error_message: answer.message });
@@ -175,7 +179,7 @@ updateQuestion = async (question_id, props) => {
     const answer = await response.json();
     if (answer.success) {
       // we update the user, to reproduce the database changes:
-      const question_list = this.state.question_list.map(question => {
+      const question_list = this.state.survey_question.map(question => {
         // if this is the contact we need to change, update it. This will apply to exactly
         // one contact
         if (question.question_id === question_id) {
@@ -212,11 +216,12 @@ createQuestion = async props => {
         
       );
     }
-    const { question_title,question_type,question_data } = props;
+    const { question_title,question_type,question_data,survey_id } = props;
     const url = makeUrl(`question/add`,{
       question_title:props.question_title,
       question_type:props.question_type,
       question_data:props.question_data,
+      survey_id:props.survey_id,
       token:this.state.token
     })
     const response = await fetch(url,{
@@ -228,7 +233,8 @@ createQuestion = async props => {
       const question = { question_title,question_type,question_data, id:question_id };
       this.setState({question_id:question_id});
       const question_list = [...this.state.question_list, question];
-      this.setState({ question_list });
+      const survey_question = [...this.state.survey_question,question]
+      this.setState({ question_list, survey_question });
       
     } else {
       this.setState({ error_message: answer.message });
@@ -288,8 +294,11 @@ createQuestion = async props => {
   onSubmit = evt => {
     evt.preventDefault();
     const { question_title, question_type,question_data,survey_id} = this.state;
+    //console.log(this.state.survey_id)
     // add the question 
     this.createQuestion({ question_title,  question_type,question_data,survey_id});
+   // console.log('createquesiont',this.state.survey_id)
+
     // empty
     this.setState({ question_title:'',question_type:'',question_data:'',survey_id});
 
@@ -476,28 +485,26 @@ getAllSurveys = async order => {
     }
   };
   //get survey questions 
-mapping = ()=>{
-  const  question = this.state.survey_question;
-  const item = question[0]
-  if(item){
-    return item.map(x=><div>{x.question_title}</div>)
-  }
-}
+// mapping = ()=>{
+//   const  question = this.state.survey_question;
+//   const item = question[0]
+//   if(item){
+//     return item.map(x=><div>{x.question_title}</div>)
+//   }
+// }survey
 surveyQuestions =() =>{
   const  question = this.state.survey_question;
-  const item = question[0]
-  console.log(item)
-  
-  const {error_message } = this.state;
-  return(
-    <div  className="survey">
-    
-    <div className="questions">
+  const item = question;
+ // console.log('im here')
+    return(
+      <div  className="survey">
+      <div className="questions">
     
     <form onSubmit={this.SubmitQuestions}>
        
        <br />
-      {/* {question.map(question => (
+       <h2>{this.survey_name}</h2>
+      {item.map(question => (
         <SurveyQuestions
           key={question.id}
           question_id={question.id}
@@ -509,7 +516,7 @@ surveyQuestions =() =>{
           deleteQuestion={this.deleteQuestion}
         />
         
-      ))} */}
+      ))}
          {/* { Object.keys(question).map(function (key) {
            var item = question[key];
            return (
@@ -517,9 +524,18 @@ surveyQuestions =() =>{
                {item.question_title}
             </div> */}
       {/* {this.item ? Object.keys(item).map(x=><div>{x.question_title}</div>) :<p>2</p>} */}
-      {this.mapping()}
+      {/* {this.mapping()} */}
       </form>
+      
       </div>
+    
+  
+       
+  
+ 
+   
+    
+    
       <div className="addQuestion">
       <br />
 <form className="third" onSubmit={this.onSubmit}>
@@ -530,6 +546,7 @@ surveyQuestions =() =>{
           onChange={evt => this.setState({ question_title: evt.target.value })}
           value={this.question_title}
         />
+        
         <input type="text"
                   id="test"getPersonalPageData
           placeholder ="question_data"

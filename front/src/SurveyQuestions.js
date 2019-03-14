@@ -18,6 +18,7 @@ export default class SurveyQuestions extends React.Component {
   }
   
   renderViewMode() {
+    console.log("here")
     const { question_id, question_title,question_data, question_type, deleteQuestion,author_id } = this.props;
     const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
@@ -30,7 +31,7 @@ export default class SurveyQuestions extends React.Component {
 
         <div className="questions">
         <span>
-          {question_id} - {question_title} 
+          {question_id} - {question_title} -{question_data}
         </span>
           <div>
               <button onClick={this.toggleEditMode} className="success">
@@ -111,6 +112,7 @@ export default class SurveyQuestions extends React.Component {
 
   render() {
     const { editMode } = this.state;
+    console.log(editMode)
     if (editMode) {
       return this.renderEditMode();
     } else {
