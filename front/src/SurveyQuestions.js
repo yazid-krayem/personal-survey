@@ -16,10 +16,19 @@ export default class SurveyQuestions extends React.Component {
     return <div> edit mode</div>;
     
   }
+  deleteQuestions(e){
+    const {deleteQuestion,question_id}=this.props
+    e.preventDefault();
+    console.log("handle request ");
+    deleteQuestion(question_id)
+    //do something...
+
+
+}
   
   renderViewMode() {
     console.log("here")
-    const { question_id, question_title,question_data, question_type, deleteQuestion,author_id } = this.props;
+    const { question_id, question_title,question_data, question_type, deleteQuestion,author_id ,question_test} = this.props;
     const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     const is_author = author_id === current_logged_in_user_id
@@ -37,7 +46,7 @@ export default class SurveyQuestions extends React.Component {
               <button onClick={this.toggleEditMode} className="success">
                 edit
               </button>
-              <button onClick={() => deleteQuestion(question_id)} className="error">
+              <button  onClick={(e) => {this.deleteQuestions(e)}} className="error">
                 x
               </button>
           </div>

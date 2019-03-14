@@ -140,10 +140,11 @@ class App extends Component {
       const answer = await response.json();
       if (answer.success) {
         // remove the user from the current list of users
-        const question_list = this.state.question_list.filter(
-          question => question.question_id !== question_id
+        const survey_question = this.state.survey_question.filter(
+          question => question.id !== question_id
         );
-        this.setState({ question_list });
+        console.log('sss',question_id)
+        this.setState({ survey_question });
         toast('deleted')
       } else {
         this.setState({ error_message: answer.message });
@@ -179,7 +180,7 @@ updateQuestion = async (question_id, props) => {
     const answer = await response.json();
     if (answer.success) {
       // we update the user, to reproduce the database changes:
-      const question_list = this.state.survey_question.map(question => {
+      const survey_question = this.state.survey_question.map(question => {
         // if this is the contact we need to change, update it. This will apply to exactly
         // one contact
         if (question.question_id === question_id) {
@@ -197,7 +198,7 @@ updateQuestion = async (question_id, props) => {
           return question;
         }
       });
-      this.setState({ question_list});
+      this.setState({ survey_question});
     } else {
       this.setState({ error_message: answer.message });
     }
