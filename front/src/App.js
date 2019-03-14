@@ -14,6 +14,7 @@ import './App.css'
 import IfAuthenticated from './IfAuthenticated';
 import Profile from './Components/Profile';
 import Main from './Main';
+import QuestionList from './Components/QuestionList';
 
 
 
@@ -27,7 +28,6 @@ class App extends Component {
     toggle: false,
     question_list: [],
     user_list:[],
-    answer_list:[],
     survey_list:[],
     survey_name:[],
     survey_question:[],
@@ -41,6 +41,8 @@ class App extends Component {
     token: null,
     nick: null,
     checkingSession: true,
+    answer_text:'',
+    answer_list:[],
         user:''
 
 
@@ -56,9 +58,8 @@ class App extends Component {
     await this.getAllQuestions();
     await this.getUsersList()
     await this.getAllSurveys()
+    await this.getAllAnswers()
     
-   
-
     if (this.props.location.pathname === "/callback") {
       this.setState({ checkingSession: false });
       return;
@@ -258,6 +259,54 @@ createQuestion = async props => {
       this.setState({ error_message: err.message });
     }
   };
+//create answer
+createAnswer = async props => {
+  try {
+    if (!props) {
+      throw new Error(
+        `errrrrrrrrrrrrrrrrrrrrror `
+      );
+    }
+    const { answer_text,question_id } = props;
+    const url = makeUrl(`answer/add`,{
+      answer_text,
+      question_id,
+      token:this.state.token
+    })
+    const response = await fetch(url,{
+      headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
+    });
+    const answer = await response.json();
+    if (answer.success) {
+      const answer_id = answer.result;
+      const answer = { answer_text,answer_id };
+      const answer_list = [...this.state.answer_list, answer];
+      this.setState({ answer_list });
+    } else {
+      this.setState({ error_message: answer.message });
+    }
+  } catch (err) {
+    this.setState({ error_message: err.message });
+  }
+};
+//All Answers
+
+getAllAnswers = async order => {
+  try {
+    const url = makeUrl=(`answers/list`)
+    const response = await fetch(url);
+    const answer = await response.json();
+    if (answer.success) {
+      const answer_list = answer.result;
+      this.setState({ answer_list });
+    } else {
+      this.setState({ error_message: answer.message });
+    }
+    
+  } catch (err) {
+    this.setState({ error_message: err.message });
+  }
+};
 
   //All users
   getUsersList = async order => {
@@ -442,6 +491,38 @@ getAllSurveys = async order => {
     this.setState({ error_message: err.message, isLoading: false });
   }
 };
+userSide = ()=>{
+  const  question = this.state.survey_question;
+  const {error_message } = this.state;
+  return(
+    <div  className="survey">
+    
+    <div className="questions">
+    
+    <form onSubmit={this.SubmitQuestions}>
+       
+       <br />
+      {question.map(question => (
+        <QuestionList
+          key={question.id}
+          question_id={question.id}
+          question_data={question.question_data}
+          question_title={question.question_title}
+          question_type={question.question_type}
+          author_id={question.author_id}
+            createAnswer={this.createAnswer}
+            answer_list={this.state.answer_list}
+            answer_text={this.state.answer_text
+            }
+          
+        />
+        
+      ))}
+
+      </form>
+      </div>
+      </div>
+  )}
 
   //create survey
   createSurvey = async props => {
@@ -476,14 +557,7 @@ getAllSurveys = async order => {
       this.setState({ error_message: err.message });
     }
   };
-  //get survey questions 
-// mapping = ()=>{
-//   const  question = this.state.survey_question;
-//   const item = question[0]
-//   if(item){
-//     return item.map(x=><div>{x.question_title}</div>)
-//   }
-// }survey
+ 
 surveyQuestions =() =>{
   const  question = this.state.survey_question;
   const item = question;
@@ -508,14 +582,7 @@ surveyQuestions =() =>{
         />
         
       ))}
-         {/* { Object.keys(question).map(function (key) {
-           var item = question[key];
-           return (
-             <div>
-               {item.question_title}
-            </div> */}
-      {/* {this.item ? Object.keys(item).map(x=><div>{x.question_title}</div>) :<p>2</p>} */}
-      {/* {this.mapping()} */}
+         
       </form>
       
       </div>
@@ -572,7 +639,7 @@ renderContent() {
     <Switch>
     <Route  path="/" exact  component={this.surveyCreate}  />
     <Route  path="/survey" exact  component={this.surveyQuestions}  />
-    <Route  path="/user-side" component={About} />
+    <Route  path="/user-side" component={this.userSide} />
     <Route  path="/data-collection" component={Link} />
     <Route  path="/profile" component={Profile}/>
     <Route path = '/callback' render = {this.handleAuthentication}/>

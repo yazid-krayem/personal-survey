@@ -76,8 +76,9 @@ const start = async () => {
   // CREATE answer
   app.get("/answer/add", isLoggedIn, async (req, res, next) => {
     try {
-      const { question_id, answer_text,user_id } = req.query;
-      const result = await controller.createAnswer({ answer_text,question_id,user_id  });
+      const { question_id, answer_text } = req.query;
+      const {sub: auth0_sub} = req.user;
+      const result = await controller.createAnswer({ answer_text,question_id ,auth0_sub });
       res.json({ success: true, result });
     } catch (e) {
       next(e);

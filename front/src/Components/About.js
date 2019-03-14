@@ -1,38 +1,47 @@
 import React, { Component} from 'react';
 import QuestionList from '../Components/QuestionList';
 import { withRouter } from 'react-router-dom';
+import { pause, makeRequestUrl } from "../utils.js";
+import * as auth0Client from '../auth';
 
 
+const makeUrl = (path, params) =>
+  makeRequestUrl(`http://localhost:8080/${path}`, params);
 
 class About extends Component {
   state={
     toggle: false,
-    question_list: [],
+    survey_question:[],
     error_message: "",
     isLoading: false,
   }
   async componentDidMount() {
-    await this.getAllQuestions();
-    
+    const id = this.state.survey_id
+    await this.getSurveyQuestions(id)    
    }
    
-  getAllQuestions = async order => {
-    try {
-      const response = await fetch(
-        `//localhost:8080/questions/list`
-      );
-      const answer = await response.json();
-      if (answer.success) {
-        const question_list = answer.result;
-        this.setState({ question_list });
-      } else {
-        this.setState({ error_message: answer.message });
-      }
-      
-    } catch (err) {
-      this.setState({ error_message: err.message });
-    }
-  };
+   //get Survey Question query
+   getSurveyQuestions = async id => {
+   
+     try {
+       const url = makeUrl(`survey/questions/${id}`)
+       const response = await fetch(url,{
+         headers: { Authorization: `Bearer ${auth0Client.getIdToken()}`}
+       })
+       const answer = await response.json();
+       if (answer.success) {
+         // add the user to the current list of contacts
+         const question = answer.result;
+         const survey_question =  question;
+         this.setState({ survey_question });
+       } else {
+         this.setState({ error_message: answer.message });
+       }
+     } catch (err) {
+       this.setState({ error_message: err.message });
+     }
+   };
+ 
   createAnswer = async props => {
     try {
       if (!props || !(props.answer_text && props.question_id )) {
@@ -63,7 +72,7 @@ class About extends Component {
   }
   
   surveyFormat =() =>{
-    const  question = this.state.question_list;
+    const  question = this.state.survey_question;
     const {error_message } = this.state;
     return(
       <div className="survey">
