@@ -45,7 +45,8 @@ const start = async () => {
   });
 
   // UPDATE
-  app.get("/questions/update/:id",isLoggedIn, async (req, res, next) => {
+  app.post("/questions/update/:id",isLoggedIn, async (req, res, next) => {
+    console.log("here")
     try {
       const { id } = req.params;
       const { question_title,question_type,question_data } = req.query;

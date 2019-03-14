@@ -54,16 +54,16 @@ const initializeDatabase = async () =>{
    */
 
   const updateQuestion = async (question_id, props) => {
-    if (!props || !(props.question_title || props.question_type )) {
+    if (!props || !(props.question_title || props.question_type||props.question_data )) {
       throw new Error(`you must provide a question`);
     }
     const { question_title,question_type,question_data } = props;
+    console.log('ss',props)
     try {
       let statement = "";
       if (question_title && question_type&& question_data ) {
         statement = SQL`UPDATE question SET question_title=${question_title}, question_type=${question_type},question_data=${question_data} WHERE question_id = ${question_id}`;
       } 
-      
       const result = await db.run(statement);
       if (result.stmt.changes === 0) {
         throw new Error(`no changes were made`);
@@ -350,8 +350,8 @@ const getUsersList = async(orderBy) =>{
 //get questions by surveys
      /**
    * Retrieves a answer
-   * @param {number} id the id of the answer
-   * @returns {object} an object with `answer_text`, and `answer_id`, representing an answer, or an error 
+   * @param {number} id the id of the question
+   * @returns {object} an object with `question_title`,`question_text`, `question_data` and `question_id`, representing an answer, or an error 
    */
   const getQuestionsBySurvey = async (id) => {
     try{

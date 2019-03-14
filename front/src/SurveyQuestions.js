@@ -12,14 +12,13 @@ export default class SurveyQuestions extends React.Component {
     this.setState({ editMode });
   };
   renderEditMode() {
-    // const { question_id, question_title, question_type, updateQuestion, deleteQuestion } = this.props;
+    const { question_id, question_title, question_type, updateQuestion, deleteQuestion } = this.props;
     return <div> edit mode</div>;
     
   }
   deleteQuestions(e){
     const {deleteQuestion,question_id}=this.props
     e.preventDefault();
-    console.log("handle request ");
     deleteQuestion(question_id)
     //do something...
 
@@ -27,12 +26,10 @@ export default class SurveyQuestions extends React.Component {
 }
   
   renderViewMode() {
-    console.log("here")
     const { question_id, question_title,question_data, question_type, deleteQuestion,author_id ,question_test} = this.props;
     const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     const is_author = author_id === current_logged_in_user_id
-    console.log(author_id, current_logged_in_user_id)
 
     
     return (
@@ -115,13 +112,12 @@ export default class SurveyQuestions extends React.Component {
     // run the update question function
     updateQuestion(question_id, { question_title,question_type,question_data });
     // toggle back view mode
-    console.log(updateQuestion)
+    console.log('survey',updateQuestion)
     this.toggleEditMode();
   };
 
   render() {
     const { editMode } = this.state;
-    console.log(editMode)
     if (editMode) {
       return this.renderEditMode();
     } else {

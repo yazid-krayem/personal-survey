@@ -75,14 +75,7 @@ class App extends Component {
  
   //get Survey Question query
   getSurveyQuestions = async id => {
-    // check if we already have the contact
-    console.log("getting survey questions",this.state.survey_question)
-  /*   const previous_question = this.state.survey_question.find(
-      question => question.question_id === id
-    );
-    if (previous_question) {
-      return; // do nothing, no need to reload a contact we already have
-    } */
+  
     try {
       const url = makeUrl(`survey/questions/${id}`)
       const response = await fetch(url,{
@@ -92,7 +85,6 @@ class App extends Component {
       if (answer.success) {
         // add the user to the current list of contacts
         const question = answer.result;
-        console.log("hello",question);
         const survey_question =  question;
         this.setState({ survey_question });
       } else {
@@ -143,7 +135,6 @@ class App extends Component {
         const survey_question = this.state.survey_question.filter(
           question => question.id !== question_id
         );
-        console.log('sss',question_id)
         this.setState({ survey_question });
         toast('deleted')
       } else {
@@ -165,30 +156,32 @@ updateQuestion = async (question_id, props) => {
         `you need at least something  `
       );
     }
+  
     const url = makeUrl(`questions/update/${question_id}`,{
       question_title:props.question_title,
       question_type:props.question_type,
       question_data:props.question_data,
       token:this.state.token
     })
+    console.log(url)
     const response = await fetch(url,{
       method:'POST', 
-      
-        headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
-
+      headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
     });
     const answer = await response.json();
+    console.log("answer", answer)
     if (answer.success) {
       // we update the user, to reproduce the database changes:
+
       const survey_question = this.state.survey_question.map(question => {
         // if this is the contact we need to change, update it. This will apply to exactly
         // one contact
-        if (question.question_id === question_id) {
+        if (question.id === question_id ) {
           const new_question = {
-            question_id: question.question_id,
+            id: question_id,
             question_title: props.question_title || question.question_type || question.question_data,
             question_type: props.question_type || question.question_title || question.question_data,
-            question_data:props.question_title || props.question_type || question.question_data,
+            question_data:props.question_data || props.question_type || question.question_data,
           
           };
           return new_question;
@@ -295,10 +288,8 @@ createQuestion = async props => {
   onSubmit = evt => {
     evt.preventDefault();
     const { question_title, question_type,question_data,survey_id} = this.state;
-    //console.log(this.state.survey_id)
     // add the question 
     this.createQuestion({ question_title,  question_type,question_data,survey_id});
-   // console.log('createquesiont',this.state.survey_id)
 
     // empty
     this.setState({ question_title:'',question_type:'',question_data:'',survey_id});
@@ -496,7 +487,6 @@ getAllSurveys = async order => {
 surveyQuestions =() =>{
   const  question = this.state.survey_question;
   const item = question;
- // console.log('im here')
     return(
       <div  className="survey">
       <div className="questions">
