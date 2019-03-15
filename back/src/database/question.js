@@ -194,7 +194,7 @@ const initializeDatabase = async () =>{
       }
       return answer
     }catch(e){
-      throw new Error(`couldn't get the answer ${id}: `+e.message)
+      throw new ErgetSurveyQuestionsror(`couldn't get the answer ${id}: `+e.message)
     }
   }
      /**
@@ -248,19 +248,21 @@ const initializeDatabase = async () =>{
   };
 
 
-   const innerQuestionsAnswers = async(orderBy) =>{
-    try{
-        let statement = `SELECT *
-        FROM question
-        INNER JOIN answer on answer.question_id = question.question_id;`
-        switch(orderBy){
+   const innerQuestionsAnswers = async survey_id =>{
+     try{
+       let statement = `SELECT *
+       FROM question
+       INNER JOIN answer on answer.question_id = question.question_id WHERE survey_id=${survey_id}`
+       /* switch(orderBy){
          case 'question_title': statement+= ` ORDER BY question_title`; break;
          default: break
-     }
-     const rows = await db.all(statement)
-   if(!rows.length){
-     throw new Error(`no rows found`)
-    }
+        } */
+        
+        console.log(survey_id)
+        const rows = await db.all(statement)
+        if(!rows.length){
+          throw new Error(`no rows found`)
+        }
     return rows
  }catch(e){
    throw new Error(`couldn't retrieve questions: `+e.message)

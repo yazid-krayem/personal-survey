@@ -17,7 +17,7 @@ export default class QuestionList extends React.Component {
     return (
       <div>
 
-        <div>
+        <div >
         <span>
           {question_id} - {question_title} 
         </span>
@@ -31,7 +31,6 @@ export default class QuestionList extends React.Component {
           </form>
        
         </div>
-        
       </div>
     );
   }

@@ -3,7 +3,6 @@ import {BrowserRouter,Switch,Route} from 'react-router-dom';
 import Question from './Components/Question'
 import Link from './Components/Link';
 import NavBar from './Components/NavBar/NavBar'
-import About from './Components/About';
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { withRouter } from 'react-router-dom';
@@ -15,6 +14,7 @@ import IfAuthenticated from './IfAuthenticated';
 import Profile from './Components/Profile';
 import Main from './Main';
 import QuestionList from './Components/QuestionList';
+import DataCollection from './DataCollection';
 
 
 
@@ -43,22 +43,27 @@ class App extends Component {
     checkingSession: true,
     answer_text:'',
     answer_list:[],
-        user:''
+        user:'',
+        inner:[]
 
 
   }
   async componentWillMount(){
   const id = this.state.survey_id
   await this.getSurveyQuestions(id)
- 
-    
-  }
 
-  async componentDidMount() {
-    await this.getAllQuestions();
-    await this.getUsersList()
-    await this.getAllSurveys()
-    await this.getAllAnswers()
+}
+ 
+async componentWillReceiveProps(){
+  const {survey_id} = this.state
+  await this.innerQuestionsAnswers(survey_id)
+}
+async componentDidMount() {
+  await this.getAllQuestions();
+  await this.getUsersList()
+  await this.getAllSurveys()
+  await this.getAllAnswers()
+  
     
     if (this.props.location.pathname === "/callback") {
       this.setState({ checkingSession: false });
@@ -277,7 +282,9 @@ createAnswer = async props => {
       headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
     });
     const answer = await response.json();
+    console.log(answer)
     if (answer.success) {
+     
       const answer_id = answer.result;
       const answer = { answer_text,answer_id };
       const answer_list = [...this.state.answer_list, answer];
@@ -285,6 +292,28 @@ createAnswer = async props => {
     } else {
       this.setState({ error_message: answer.message });
     }
+  } catch (err) {
+    this.setState({ error_message: err.message });
+  }
+};
+
+//inner 
+ 
+innerQuestionsAnswers =  async survey_id => {
+  try {
+    const {survey_id} = this.state
+   // const survey_id= 170
+    const url = makeUrl(`inner/question?survey_id=${survey_id}`)
+    const response =  await fetch(url);
+    console.log(url)
+    const answer =  await response.json();
+    if (answer.success) {
+      const inner = answer.result;
+      this.setState({ inner });
+    } else {
+      this.setState({ error_message: answer.message });
+    }
+    
   } catch (err) {
     this.setState({ error_message: err.message });
   }
@@ -491,13 +520,17 @@ getAllSurveys = async order => {
     this.setState({ error_message: err.message, isLoading: false });
   }
 };
+data = ()=>{
+  this.props.history.push('/data-collection')
+ 
+
+}
 userSide = ()=>{
   const  question = this.state.survey_question;
-  const {error_message } = this.state;
   return(
-    <div  className="survey">
+    <div className="user-side" >
     
-    <div className="questions">
+    <div className="answers">
     
     <form onSubmit={this.SubmitQuestions}>
        
@@ -512,8 +545,36 @@ userSide = ()=>{
           author_id={question.author_id}
             createAnswer={this.createAnswer}
             answer_list={this.state.answer_list}
-            answer_text={this.state.answer_text
-            }
+            answer_text={this.state.answer_text}
+          
+        />
+        
+      ))}
+
+      </form>
+      <button onClick={this.data}>Data</button>
+      </div>
+      </div>
+  )}
+ dataCollection = ()=>{
+  const  inner = this.state.inner;
+  return(
+    <div  >
+    
+    <div >
+    
+    <form onSubmit={this.SubmitQuestions}>
+       
+       <br />
+      {inner.map(x => (
+        <DataCollection
+          key={x.id}
+          question_id={x.id}
+          question_title={x.question_title}
+          question_type={x.question_type}
+          answer_text={x.answer_text}
+          author_id={x.author_id}
+          survey_id={this.state.survey_id}  
           
         />
         
@@ -523,7 +584,6 @@ userSide = ()=>{
       </div>
       </div>
   )}
-
   //create survey
   createSurvey = async props => {
     try {
@@ -638,9 +698,9 @@ renderContent() {
   return (
     <Switch>
     <Route  path="/" exact  component={this.surveyCreate}  />
-    <Route  path="/survey" exact  component={this.surveyQuestions}  />
+    <Route  path="/survey"   component={this.surveyQuestions}  />
     <Route  path="/user-side" component={this.userSide} />
-    <Route  path="/data-collection" component={Link} />
+    <Route  path="/data-collection" component={this.dataCollection} />
     <Route  path="/profile" component={Profile}/>
     <Route path = '/callback' render = {this.handleAuthentication}/>
     <Route render={()=><div>not found!</div>}/>
@@ -670,6 +730,10 @@ handleAuthentication = () => {
   this.login();
   return <p>wait...{this.name}</p>;
 };
+userList=()=>{
+  const {user_list}=this.state
+return (user_list.map(x=> <div>{x.user_name}</div>))
+}
 surveyCreate = ()=>{
   return <Main  
   createSurvey={this.createSurvey}
@@ -683,7 +747,6 @@ surveyCreate = ()=>{
     return (
       <div className="mainPage">
      
-<NavBar />
       
           {this.renderContent()}
 <div>

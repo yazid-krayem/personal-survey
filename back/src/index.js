@@ -186,8 +186,8 @@ const start = async () => {
   //inner join (questions and answers)
   app.get("/inner/question", async (req, res, next) => {
     try {
-      const { order } = req.query;
-      const answers = await controller.innerQuestionsAnswers(order);
+      const { survey_id } = req.query;
+      const answers = await controller.innerQuestionsAnswers(survey_id);
       res.json({ success: true, result: answers });
     } catch (e) {
       next(e);
