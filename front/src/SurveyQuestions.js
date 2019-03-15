@@ -112,7 +112,6 @@ export default class SurveyQuestions extends React.Component {
     // run the update question function
     updateQuestion(question_id, { question_title,question_type,question_data });
     // toggle back view mode
-    console.log('survey',updateQuestion)
     this.toggleEditMode();
   };
 

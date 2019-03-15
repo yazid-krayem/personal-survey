@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import {BrowserRouter,Switch,Route} from 'react-router-dom';
+import {Switch,Route} from 'react-router-dom';
 import Question from './Components/Question'
-import Link from './Components/Link';
 import NavBar from './Components/NavBar/NavBar'
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,7 +9,6 @@ import { pause, makeRequestUrl } from "./utils.js";
 import * as auth0Client from './auth';
 import SurveyQuestions from './SurveyQuestions'
 import './App.css'
-import IfAuthenticated from './IfAuthenticated';
 import Profile from './Components/Profile';
 import Main from './Main';
 import QuestionList from './Components/QuestionList';
@@ -169,13 +167,11 @@ updateQuestion = async (question_id, props) => {
       question_data:props.question_data,
       token:this.state.token
     })
-    console.log(url)
     const response = await fetch(url,{
       method:'POST', 
       headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
     });
     const answer = await response.json();
-    console.log("answer", answer)
     if (answer.success) {
       // we update the user, to reproduce the database changes:
 
@@ -282,7 +278,6 @@ createAnswer = async props => {
       headers: { Authorization: `Bearer ${auth0Client.getIdToken()}` }
     });
     const answer = await response.json();
-    console.log(answer)
     if (answer.success) {
      
       const answer_id = answer.result;
@@ -302,10 +297,8 @@ createAnswer = async props => {
 innerQuestionsAnswers =  async survey_id => {
   try {
     const {survey_id} = this.state
-   // const survey_id= 170
     const url = makeUrl(`inner/question?survey_id=${survey_id}`)
     const response =  await fetch(url);
-    console.log(url)
     const answer =  await response.json();
     if (answer.success) {
       const inner = answer.result;
@@ -322,7 +315,7 @@ innerQuestionsAnswers =  async survey_id => {
 
 getAllAnswers = async order => {
   try {
-    const url = makeUrl=(`answers/list`)
+    const url = makeUrl(`answers/list`)
     const response = await fetch(url);
     const answer = await response.json();
     if (answer.success) {
@@ -389,7 +382,6 @@ change = ()=>{
 
   surveyFormat =() =>{
     const  question = this.state.question_list;
-    const {error_message } = this.state;
     return(
       <div  className="survey">
       

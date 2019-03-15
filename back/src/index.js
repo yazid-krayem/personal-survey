@@ -46,7 +46,6 @@ const start = async () => {
 
   // UPDATE
   app.post("/questions/update/:id",isLoggedIn, async (req, res, next) => {
-    console.log("here")
     try {
       const { id } = req.params;
       const { question_title,question_type,question_data } = req.query;
@@ -221,7 +220,6 @@ app.get("/survey/questions/:id", async (req, res, next) => {
 //inner (survey question)
   // ERROR
   app.use((err, req, res, next) => {
-    console.error(err)
     const message = err.message
     res.status(500).json({ success:false, message })
   })

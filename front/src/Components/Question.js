@@ -23,7 +23,6 @@ export default class Question extends React.Component {
     const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     const is_author = author_id === current_logged_in_user_id
-    console.log(author_id, current_logged_in_user_id)
 
     
     return (
@@ -106,7 +105,6 @@ export default class Question extends React.Component {
     // run the update question function
     updateQuestion(question_id, { question_title,question_type,question_data });
     // toggle back view mode
-    console.log(updateQuestion)
     this.toggleEditMode();
   };
 

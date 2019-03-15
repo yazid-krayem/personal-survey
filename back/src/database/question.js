@@ -20,7 +20,6 @@ const initializeDatabase = async () =>{
     
     const { question_title , question_type ,question_data, auth0_sub,survey_id} = props;
 
-    console.log('survey_id =>',survey_id)
     try{
       const result = await db.run(SQL`INSERT INTO question (question_title,question_type,question_data,auth0_sub,survey_id) VALUES (${question_title},${question_type},${question_data}, ${auth0_sub},${survey_id})`);
       const id = result.stmt.lastID
@@ -58,7 +57,6 @@ const initializeDatabase = async () =>{
       throw new Error(`you must provide a question`);
     }
     const { question_title,question_type,question_data } = props;
-    console.log('ss',props)
     try {
       let statement = "";
       if (question_title && question_type&& question_data ) {
@@ -128,7 +126,6 @@ const initializeDatabase = async () =>{
       throw new Error(`you must provide a answer`)
     }
     const { answer_text,question_id,auth0_sub } = props;
-    console.log('create answer',props)
     try{
       const result = await db.run(SQL`INSERT INTO answer (answer_text,question_id,auth0_sub) VALUES (${answer_text},${question_id},${auth0_sub})`);
       const id = result.stmt.lastID
@@ -258,7 +255,6 @@ const initializeDatabase = async () =>{
          default: break
         } */
         
-        console.log(survey_id)
         const rows = await db.all(statement)
         if(!rows.length){
           throw new Error(`no rows found`)

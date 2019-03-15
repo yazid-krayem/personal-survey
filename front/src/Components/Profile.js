@@ -32,7 +32,6 @@ async componentDidMount() {
 };
 
 render() {
-  console.log(this.state)
 return(
     <div>
       {this.state.inner.map(x=>(
