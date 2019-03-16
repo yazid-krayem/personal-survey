@@ -283,6 +283,24 @@ const innerSurveysandQuestions = async(orderBy) =>{
  throw new Error(`couldn't retrieve questions: `+e.message)
 }
 }
+const innerSurveysandUsers = async(orderBy) =>{
+  try{
+      let statement = `SELECT *
+      FROM user
+      INNER JOIN survey on survey.auth0_sub = user.auth0_sub`
+      switch(orderBy){
+       case 'auth0_sub': statement+= ` ORDER BY auth0_sub`; break;
+       default: break
+   }
+   const rows = await db.all(statement)
+ if(!rows.length){
+   throw new Error(`no rows found`)
+  }
+  return rows
+}catch(e){
+ throw new Error(`couldn't retrieve questions: `+e.message)
+}
+}
 //CREATE USERS
 const createUser = async (props) => {
   if(!props  ){
@@ -382,7 +400,8 @@ const controller = {
     createSurvey,
     getSurveysList,
     innerSurveysandQuestions,
-    getQuestionsBySurvey
+    getQuestionsBySurvey,
+    innerSurveysandUsers
 }
 return controller
 }

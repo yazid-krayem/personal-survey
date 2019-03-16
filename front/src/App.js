@@ -10,7 +10,6 @@ import * as auth0Client from './auth';
 import SurveyQuestions from './SurveyQuestions'
 // import './App.css'
 import Profile from './Components/Profile';
-import Main from './Main';
 import QuestionList from './Components/QuestionList';
 import DataCollection from './DataCollection';
 import UserName from './Components/UserName';
@@ -43,20 +42,23 @@ class App extends Component {
     checkingSession: true,
     answer_text:'',
     answer_list:[],
-        user:'',
-        inner:[]
+    user:'',
+    inner:[],
+    surveysUsers:[]
 
 
   }
   async componentWillMount(){
   const id = this.state.survey_id
   await this.getSurveyQuestions(id)
+
   
 }
 
 async componentWillReceiveProps(){
   const {survey_id} = this.state
   await this.innerQuestionsAnswers(survey_id)
+  await this.innerSyrveysAndUsers()
 }
 async componentDidMount() {
   await this.getUsersList()
@@ -294,7 +296,7 @@ createAnswer = async props => {
   }
 };
 
-//inner 
+//inner (questions and answers)
  
 innerQuestionsAnswers =  async survey_id => {
   try {
@@ -305,6 +307,24 @@ innerQuestionsAnswers =  async survey_id => {
     if (answer.success) {
       const inner = answer.result;
       this.setState({ inner });
+    } else {
+      this.setState({ error_message: answer.message });
+    }
+    
+  } catch (err) {
+    this.setState({ error_message: err.message });
+  }
+};
+// inner (surveys and users )
+
+innerSyrveysAndUsers =  async auth0_sub => {
+  try {
+    const url = makeUrl(`inner/surveys?auth0_sub=${auth0_sub}`)
+    const response =  await fetch(url);
+    const answer =  await response.json();
+    if (answer.success) {
+      const surveysUsers = answer.result;
+      this.setState({ surveysUsers });
     } else {
       this.setState({ error_message: answer.message });
     }
@@ -701,7 +721,7 @@ renderContent() {
     <Route  path="/survey"   component={this.surveyQuestions}  />
     <Route  path="/user-side" component={this.userSide} />
     <Route  path="/data-collection" component={this.dataCollection} />
-    <Route  path="/profile" component={Profile}/>
+    <Route  path="/profile" />
     <Route path = '/callback' render = {this.handleAuthentication}/>
     <Route render={()=><div>not found!</div>}/>
 
@@ -732,31 +752,37 @@ handleAuthentication = () => {
   return <p>wait...{this.name}</p>;
 };
 
-surveyCreate = ()=>{
-  return <Main  
-  createSurvey={this.createSurvey}
-  getAllSurveys={this.getAllSurveys}
-  survey_name={this.state.survey_name}
-  />
-}
 userList=()=>{
   const {user_list}=this.state
 return (user_list.map(x=> <div>{x.user_name}</div>))
 }
-userName = ( )=>{
-  return <div>
+
+surveyCreate = ()=>{
+  const isLoggedIn = auth0Client.isAuthenticated();
+    const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
+    console.log('testing',current_logged_in_user_id)
+  if(current_logged_in_user_id== false){
+    return<div> <button onClick={auth0Client.signIn}>sign in</button>
+    </div>
+  }else{
+    return <div>
   
     {this.state.user_list.map(x => (
       <UserName
         key={x.id}
         auth0_sub={x.auth0_sub}
         user_name={x.user_name}
+        createSurvey={this.createSurvey}
+        getAllSurveys={this.getAllSurveys}
+        survey_name={this.state.survey_name}
        
       />
       
     ))}
    </div>
+  }
 }
+
   render() {
     return (
       <div className="mainPage">
@@ -771,7 +797,6 @@ userName = ( )=>{
       <br />    
 <br />
 <br />
-<h1>hello!!!! <span>{this.userName()}</span> </h1>
       <div>
         </div>
 

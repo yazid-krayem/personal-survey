@@ -192,7 +192,16 @@ const start = async () => {
       next(e);
     }
   });
-
+  //inner join (surveys and users)
+  app.get("/inner/surveys", async (req, res, next) => {
+    try {
+      const { auth0_sub } = req.query;
+      const answers = await controller.innerSurveysandUsers(auth0_sub);
+      res.json({ success: true, result: answers });
+    } catch (e) {
+      next(e);
+    }
+  });
   //Auth 
   app.get('/mypage', isLoggedIn, async ( req, res, next ) => {
     try{
