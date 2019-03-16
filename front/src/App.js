@@ -762,7 +762,7 @@ surveyCreate = ()=>{
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     console.log('testing',current_logged_in_user_id)
   if(current_logged_in_user_id== false){
-    return<div> <button onClick={auth0Client.signIn}>sign in</button>
+    return<div className="mainForm"> <button onClick={auth0Client.signIn}>sign in</button>
     </div>
   }else{
     return <div>

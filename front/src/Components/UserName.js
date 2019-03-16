@@ -1,6 +1,8 @@
 import React, { Component} from 'react';
 import { withRouter } from 'react-router-dom';
 import * as auth0Client from '../auth';
+import Popup from "reactjs-popup";
+import { Button } from 'react-bootstrap';
 
 
 
@@ -18,20 +20,20 @@ class UserName extends Component {
     if(auth0_sub !== current_logged_in_user_id){
         return <div></div>
     }else{
-        return <div><h1>{user_name}</h1>
+        return <div className="mainForm"><h1>{user_name}</h1>
         
+        <Popup trigger={<button>Create Survey</button>}>
         <div>
          
-
-         <form onSubmit={this.link} className="mainForm">
+         <form onSubmit={this.link} >
      <input id="title" 
      placeholder="survey_name"
       name='survey_name_input'
            />
-     <input className="mainButton" type="submit" value="Create Survey" />
+     {/* <input className="mainButton" type="submit" value="Create Survey" /> */}
      </form>
          </div>
-      
+         </Popup>
         </div>
     }
 }
