@@ -8,16 +8,18 @@ export default class QuestionList extends React.Component {
   
   
   renderViewMode() {
-    const { question_id, question_title,author_id } = this.props;
+    const { question_id, question_title,author_id,survey_name } = this.props;
     const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     const is_author = author_id === current_logged_in_user_id
-    console.log(author_id, current_logged_in_user_id)
-
+    console.log(this.props)
+console.log('question',this.props.survey_name)
     return (
       <div>
 
         <div >
+        <h2 className="survey_name">{survey_name}</h2>
+
         <span>
           {question_id} - {question_title} 
         </span>

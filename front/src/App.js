@@ -8,7 +8,7 @@ import { withRouter } from 'react-router-dom';
 import { pause, makeRequestUrl } from "./utils.js";
 import * as auth0Client from './auth';
 import SurveyQuestions from './SurveyQuestions'
-import './App.css'
+// import './App.css'
 import Profile from './Components/Profile';
 import Main from './Main';
 import QuestionList from './Components/QuestionList';
@@ -375,7 +375,6 @@ change = ()=>{
     // add the survey 
     this.createQuestion({ survey_name});
     // empty
-    this.setState({ survey_name:'' });
 
   this.props.history.push('/user-side')
 }
@@ -519,13 +518,15 @@ data = ()=>{
 }
 userSide = ()=>{
   const  question = this.state.survey_question;
+  console.log('app',this.state.survey_name)
+
   return(
     <div className="user-side" >
     
     <div className="answers">
     
     <form onSubmit={this.SubmitQuestions}>
-       
+
        <br />
       {question.map(question => (
         <QuestionList
@@ -538,6 +539,7 @@ userSide = ()=>{
             createAnswer={this.createAnswer}
             answer_list={this.state.answer_list}
             answer_text={this.state.answer_text}
+            survey_name={this.state.survey_name}
           
         />
         
@@ -567,7 +569,7 @@ userSide = ()=>{
           answer_text={x.answer_text}
           author_id={x.author_id}
           survey_id={this.state.survey_id}  
-          
+          survey_name={this.state.survey_name}
         />
         
       ))}
@@ -596,8 +598,8 @@ userSide = ()=>{
       const answer = await response.json();
       if (answer.success) {
         const survey_id = answer.result;
-        const survey = { survey_name, id:survey_id };
-        this.setState({survey_id:survey_id});
+        const survey = { survey_name, id:survey_id, };
+        this.setState({survey_id:survey_id,survey_name:survey_name});
         const survey_list = [...this.state.survey_list, survey];
         this.setState({ survey_list });
         
@@ -620,7 +622,9 @@ surveyQuestions =() =>{
     <form onSubmit={this.SubmitQuestions}>
        
        <br />
-       <h2>{this.survey_name}</h2>
+       <p></p>
+       <h2 className="survey_name">{this.state.survey_name}</h2>
+       <hr />
       {item.map(question => (
         <SurveyQuestions
           key={question.id}
@@ -631,6 +635,7 @@ surveyQuestions =() =>{
           author_id={question.author_id}
           updateQuestion={this.updateQuestion}
           deleteQuestion={this.deleteQuestion}
+          survey_name={this.state.survey_name}
         />
         
       ))}
@@ -689,6 +694,7 @@ renderContent() {
   }
   return (
     <Switch>
+      
     <Route  path="/" exact  component={this.surveyCreate}  />
     <Route  path="/survey"   component={this.surveyQuestions}  />
     <Route  path="/user-side" component={this.userSide} />
@@ -739,7 +745,7 @@ surveyCreate = ()=>{
     return (
       <div className="mainPage">
      
-      
+      <NavBar />
           {this.renderContent()}
 <div>
 <br />

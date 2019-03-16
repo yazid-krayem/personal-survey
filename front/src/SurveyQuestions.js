@@ -36,23 +36,26 @@ export default class SurveyQuestions extends React.Component {
       <div>
 
         <div className="questions">
-        <span>
-          {question_id} - {question_title} -{question_data}
-        </span>
-          <div>
-              <button onClick={this.toggleEditMode} className="success">
+      
+
+          <article class="card">
+  <header>
+          {question_id} - {question_title} 
+  </header>
+    <footer>
+  <button onClick={this.toggleEditMode} className="success">
                 edit
               </button>
               <button  onClick={(e) => {this.deleteQuestions(e)}} className="error">
                 x
               </button>
+              </footer>
+</article>
           </div>
         
 
-
        
-      </div>
-      </div>
+   </div>
     );
   }
   

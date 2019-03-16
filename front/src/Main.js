@@ -28,12 +28,11 @@ class Main extends Component {
       placeholder="survey_name"
        name='survey_name_input'
             />
-      <input type="submit" value="Create Survey" />
+      <input className="mainButton" type="submit" value="Create Survey" />
       </form>
           </div>
-        
-
-
+       
+ 
        
       </div>
     );
@@ -43,7 +42,7 @@ class Main extends Component {
     const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     const is_author = author_id === current_logged_in_user_id
-    if(author_id){
+    if(author_id === current_logged_in_user_id){
       return this.renderViewMode()
     }
     return this.auth0Client.signIn()

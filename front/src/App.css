@@ -10,6 +10,9 @@ flex-flow: row wrap;
   background-size: cover;
 
 }
+.survey_name{
+    text-align: center;
+}
 .survey{
     display: flex;
     border: 1px solid #ccc;
