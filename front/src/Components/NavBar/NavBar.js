@@ -15,12 +15,11 @@ class Header extends Component {
     <Nav className="mr-auto">
       <Nav.Link><Link to="/">Home</Link></Nav.Link>
       <IfAuthenticated>
-    <Nav.Link><Link to="/work">Profile</Link></Nav.Link>
+    <Nav.Link><Link to="/profile">Profile</Link></Nav.Link>
     </IfAuthenticated>
     </Nav>
     <Nav.Link eventKey={10} >
     
-    <button onClick={auth0Client.signIn}>sign in</button>
 
       </Nav.Link>
       <Nav.Link eventKey={10} >

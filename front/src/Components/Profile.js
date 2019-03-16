@@ -1,62 +1,37 @@
-import React, { Component} from 'react';
-import { pause, makeRequestUrl } from "../utils.js";
+import React from 'react';
+import * as auth0Client from '../auth';
+import { withRouter } from 'react-router-dom';
 
 
-const makeUrl = (path, params) =>
-  makeRequestUrl(`http://localhost:8080/${path}`, params);
-
-class Profile extends Component {
-state={
- inner:[],
- error_message:''
-}
-async componentDidMount() {
-  await this.innerSurveyAndQuestions();
- }
+export default class Profile extends React.Component {
   
- innerSurveyAndQuestions = async order => {
-  try {
-    const url = makeUrl('inner/survey')
-    const response = await fetch(url);
-    const answer = await response.json();
-    if (answer.success) {
-      const inner = answer.result;
-      this.setState({ inner });
-    } else {
-      this.setState({ error_message: answer.message });
-    }
+  
+  
+  renderViewMode() {
+    const { user_name,survey_name,survey_id } = this.props;
     
-  } catch (err) {
-    this.setState({ error_message: err.message });
+    return (
+      <div>
+
+        <div >
+
+       <button>{survey_id}-{survey_name}</button>
+       
+       
+        </div>
+      </div>
+    );
   }
-};
-
-render() {
-return(
-    <div>
-      {this.state.inner.map(x=>(
-        <div style={{margin:'0 auto',width:'50%'}}>
-          <div style={{backgroundColor:'grey'}}>
-        <h4>{x.question_title}</h4>
-        </div>
-        <p>{x.survey_name}</p>
-        </div>
-      ))}
-    </div>
-);
-}
-}
-export default Profile;
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
+   
+  
+ 
+    render() {
+      return(
+          <div>
+           {this.renderViewMode()}
+          </div>
+      );
+      }
+    }
+      

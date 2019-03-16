@@ -250,10 +250,7 @@ const initializeDatabase = async () =>{
        let statement = `SELECT *
        FROM question
        INNER JOIN answer on answer.question_id = question.question_id WHERE survey_id=${survey_id}`
-       /* switch(orderBy){
-         case 'question_title': statement+= ` ORDER BY question_title`; break;
-         default: break
-        } */
+       
         
         const rows = await db.all(statement)
         if(!rows.length){
@@ -283,15 +280,13 @@ const innerSurveysandQuestions = async(orderBy) =>{
  throw new Error(`couldn't retrieve questions: `+e.message)
 }
 }
-const innerSurveysandUsers = async(orderBy) =>{
+const innerSurveysandUsers = async(auth0_sub) =>{
   try{
       let statement = `SELECT *
       FROM user
-      INNER JOIN survey on survey.auth0_sub = user.auth0_sub`
-      switch(orderBy){
-       case 'auth0_sub': statement+= ` ORDER BY auth0_sub`; break;
-       default: break
-   }
+      INNER JOIN survey on survey.auth0_sub = user.auth0_sub where user.auth0_sub=${auth0_sub}`
+     
+   
    const rows = await db.all(statement)
  if(!rows.length){
    throw new Error(`no rows found`)

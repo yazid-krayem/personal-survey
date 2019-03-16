@@ -51,15 +51,20 @@ class App extends Component {
   async componentWillMount(){
   const id = this.state.survey_id
   await this.getSurveyQuestions(id)
-
+ 
   
 }
 
 async componentWillReceiveProps(){
   const {survey_id} = this.state
   await this.innerQuestionsAnswers(survey_id)
-  await this.innerSyrveysAndUsers()
+  const isLoggedIn = auth0Client.isAuthenticated();
+  const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
+  const auth0_sub = current_logged_in_user_id
+  await this.innerSyrveysAndUsers(auth0_sub)
+  console.log('component',auth0_sub)
 }
+
 async componentDidMount() {
   await this.getUsersList()
   await this.getAllQuestions();
@@ -319,7 +324,8 @@ innerQuestionsAnswers =  async survey_id => {
 
 innerSyrveysAndUsers =  async auth0_sub => {
   try {
-    const url = makeUrl(`inner/surveys?auth0_sub=${auth0_sub}`)
+    const url = makeUrl(`inner/surveys?auth0_sub="${auth0_sub}"`)
+    console.log('this is ',url)
     const response =  await fetch(url);
     const answer =  await response.json();
     if (answer.success) {
@@ -721,7 +727,7 @@ renderContent() {
     <Route  path="/survey"   component={this.surveyQuestions}  />
     <Route  path="/user-side" component={this.userSide} />
     <Route  path="/data-collection" component={this.dataCollection} />
-    <Route  path="/profile" />
+    <Route  path="/profile" component={this.usersAndSurveys}/>
     <Route path = '/callback' render = {this.handleAuthentication}/>
     <Route render={()=><div>not found!</div>}/>
 
@@ -761,7 +767,7 @@ surveyCreate = ()=>{
   const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     console.log('testing',current_logged_in_user_id)
-  if(current_logged_in_user_id== false){
+  if(current_logged_in_user_id=== false){
     return<div className="mainForm"> <button onClick={auth0Client.signIn}>sign in</button>
     </div>
   }else{
@@ -775,12 +781,37 @@ surveyCreate = ()=>{
         createSurvey={this.createSurvey}
         getAllSurveys={this.getAllSurveys}
         survey_name={this.state.survey_name}
+        UNState={this.state.user_name}
        
       />
       
     ))}
    </div>
   }
+}
+usersAndSurveys = ()=>{
+  const  survey = this.state.surveysUsers;
+
+  return(
+    <div className="user-side" >
+    
+    
+
+       <br />
+      {survey.map(user => (
+        <Profile
+          key={user.id}
+          user_name={user.user_name}
+          survey_name={user.survey_name}
+          survey_id={user.survey_id}
+         
+          
+        />
+        
+      ))}
+
+    </div>
+  )
 }
 
   render() {

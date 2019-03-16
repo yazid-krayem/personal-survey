@@ -41,7 +41,7 @@ class UserName extends Component {
 link = (evt)=>{
 
     this.props.history.push('/survey')
-    const { createSurvey } = this.props;
+    const { createSurvey,user_name,UNState } = this.props;
   
     const form = evt.target;
     const survey_name_input = form.survey_name_input;
@@ -51,6 +51,10 @@ link = (evt)=>{
       // add the survey 
       
       createSurvey({ survey_name});
+      this.setState(prevState => ({
+        UNState: [...prevState.UNState, user_name]
+      }))
+      console.log('username',user_name,'un',UNState,)
   }
   
 render() {
