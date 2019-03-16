@@ -13,6 +13,7 @@ import Profile from './Components/Profile';
 import Main from './Main';
 import QuestionList from './Components/QuestionList';
 import DataCollection from './DataCollection';
+import UserName from './Components/UserName';
 
 
 
@@ -26,6 +27,7 @@ class App extends Component {
     toggle: false,
     question_list: [],
     user_list:[],
+    user_name:'',
     survey_list:[],
     survey_name:[],
     survey_question:[],
@@ -49,16 +51,16 @@ class App extends Component {
   async componentWillMount(){
   const id = this.state.survey_id
   await this.getSurveyQuestions(id)
-
+  
 }
- 
+
 async componentWillReceiveProps(){
   const {survey_id} = this.state
   await this.innerQuestionsAnswers(survey_id)
 }
 async componentDidMount() {
-  await this.getAllQuestions();
   await this.getUsersList()
+  await this.getAllQuestions();
   await this.getAllSurveys()
   await this.getAllAnswers()
   
@@ -716,6 +718,7 @@ login = async () => {
   try {
     await auth0Client.handleAuthentication();
     const name = auth0Client.getProfile().name; // get the data from Auth0
+    console.log('720',name)
     await this.getPersonalPageData(); // get the data from our server
     toast(`${name} is logged in`);
     this.props.history.push("/");
@@ -728,10 +731,7 @@ handleAuthentication = () => {
   this.login();
   return <p>wait...{this.name}</p>;
 };
-userList=()=>{
-  const {user_list}=this.state
-return (user_list.map(x=> <div>{x.user_name}</div>))
-}
+
 surveyCreate = ()=>{
   return <Main  
   createSurvey={this.createSurvey}
@@ -739,9 +739,25 @@ surveyCreate = ()=>{
   survey_name={this.state.survey_name}
   />
 }
-
+userList=()=>{
+  const {user_list}=this.state
+return (user_list.map(x=> <div>{x.user_name}</div>))
+}
+userName = ( )=>{
+  return <div>
+  
+    {this.state.user_list.map(x => (
+      <UserName
+        key={x.id}
+        auth0_sub={x.auth0_sub}
+        user_name={x.user_name}
+       
+      />
+      
+    ))}
+   </div>
+}
   render() {
-
     return (
       <div className="mainPage">
      
@@ -755,13 +771,9 @@ surveyCreate = ()=>{
       <br />    
 <br />
 <br />
-<div>
+<h1>hello!!!! <span>{this.userName()}</span> </h1>
       <div>
-      </div>
         </div>
-    
-
-
 
       </div>
       </div>
