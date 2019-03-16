@@ -266,7 +266,7 @@ const innerSurveysandQuestions = async(orderBy) =>{
   try{
       let statement = `SELECT *
       FROM survey
-      INNER JOIN question on question.survey_id = survey.survey_id;`
+      INNER JOIN question on question.survey_id = survey.survey_id`
       switch(orderBy){
        case 'survey_id': statement+= ` ORDER BY survey_id`; break;
        default: break

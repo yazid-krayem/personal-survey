@@ -173,10 +173,10 @@ const start = async () => {
     }
   });
   //inner join (questions and survey)
-  app.get("/inner/survey", async (req, res, next) => {
+  app.get("/inner/survey/questions", async (req, res, next) => {
     try {
       const { order } = req.query;
-      const answers = await controller.innerQuestionsAnswers(order);
+      const answers = await controller.innerSurveysandQuestions(order);
       res.json({ success: true, result: answers });
     } catch (e) {
       next(e);
@@ -202,6 +202,7 @@ const start = async () => {
       next(e);
     }
   });
+  
   //Auth 
   app.get('/mypage', isLoggedIn, async ( req, res, next ) => {
     try{

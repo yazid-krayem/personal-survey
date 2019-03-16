@@ -44,7 +44,8 @@ class App extends Component {
     answer_list:[],
     user:'',
     inner:[],
-    surveysUsers:[]
+    surveysUsers:[],
+    
 
 
   }
@@ -61,8 +62,8 @@ async componentWillReceiveProps(){
   const isLoggedIn = auth0Client.isAuthenticated();
   const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
   const auth0_sub = current_logged_in_user_id
-  await this.innerSyrveysAndUsers(auth0_sub)
-  console.log('component',auth0_sub)
+  await this.innerSurveysAndUsers(auth0_sub)
+  await this.innerSurveysAndQuestions()
 }
 
 async componentDidMount() {
@@ -322,7 +323,7 @@ innerQuestionsAnswers =  async survey_id => {
 };
 // inner (surveys and users )
 
-innerSyrveysAndUsers =  async auth0_sub => {
+innerSurveysAndUsers =  async auth0_sub => {
   try {
     const url = makeUrl(`inner/surveys?auth0_sub="${auth0_sub}"`)
     console.log('this is ',url)
@@ -331,6 +332,25 @@ innerSyrveysAndUsers =  async auth0_sub => {
     if (answer.success) {
       const surveysUsers = answer.result;
       this.setState({ surveysUsers });
+    } else {
+      this.setState({ error_message: answer.message });
+    }
+    
+  } catch (err) {
+    this.setState({ error_message: err.message });
+  }
+};
+
+// inner ( surveys and questions )
+innerSurveysAndQuestions =  async order => {
+  try {
+    const url = makeUrl(`inner/survey/questions`)
+    const response =  await fetch(url);
+    console.log('surevy',url)
+    const answer =  await response.json();
+    if (answer.success) {
+    const survey_question = answer.result;
+      this.setState({ survey_question });
     } else {
       this.setState({ error_message: answer.message });
     }
