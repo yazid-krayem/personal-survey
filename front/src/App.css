@@ -1,5 +1,5 @@
 
-.mainPage{
+*{
 width: 100%;
 height: 768px;
 background-image: url("./background.jpg");
@@ -31,7 +31,8 @@ flex-flow: row wrap;
 }
 .addQuestion{
     flex: 1;
-    padding: 0;
+    paheight: 768px;
+    dding: 0;
     background-color: #fff;
     padding-left: 10px;
 

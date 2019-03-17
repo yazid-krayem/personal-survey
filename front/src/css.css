@@ -1,0 +1,45 @@
+.App{
+    background-image: url("./background.jpg");
+    background-size: 100% 100% ;
+    background-repeat: no-repeat;
+    /* background-size: auto; */
+    height: 635px;
+
+}
+
+.userName{
+    height: 40em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.h1-userName{
+    font-size: 62px;
+    font-family: "Times New Roman", Times, serif;
+    
+
+}
+.createSurveybtn{
+    font-size: 20px;
+    /* padding: 0; */
+    margin: 0 auto;
+    /* color: #0074d9; */
+    
+
+}
+.span{
+    font-size: 50px;
+
+}
+.popup{
+    /* border: 1px black solid; */
+    margin-left: 75px;
+
+}
+#title::placeholder{
+    text-align: center;
+    color:black;
+    font-size:22px;
+
+}

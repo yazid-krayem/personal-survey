@@ -20,20 +20,20 @@ class UserName extends Component {
     if(auth0_sub !== current_logged_in_user_id){
         return <div></div>
     }else{
-        return <div className="mainForm"><h1>{user_name}</h1>
-        
-        <Popup trigger={<button>Create Survey</button>}>
-        <div>
+        return <div ><h2 className="h1-userName"><span className="span"><span style={{color:"#0074d9"}}>W</span>elcome </span>{user_name}</h2>
+        <div className="popup">
+        <Popup className="popup" trigger={<button className="createSurveybtn">Create Survey</button>} modal
+    closeOnDocumentClick>
          
          <form onSubmit={this.link} >
      <input id="title" 
-     placeholder="survey_name"
+     placeholder="survey    name"
       name='survey_name_input'
            />
      {/* <input className="mainButton" type="submit" value="Create Survey" /> */}
      </form>
-         </div>
          </Popup>
+         </div>
         </div>
     }
 }

@@ -13,6 +13,7 @@ import Profile from './Components/Profile';
 import QuestionList from './Components/QuestionList';
 import DataCollection from './DataCollection';
 import UserName from './Components/UserName';
+import './css.css'
 
 
 
@@ -788,10 +789,12 @@ surveyCreate = ()=>{
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     console.log('testing',current_logged_in_user_id)
   if(current_logged_in_user_id=== false){
-    return<div className="mainForm"> <button onClick={auth0Client.signIn}>sign in</button>
+    return<div className="userName">
+    {/* <h1 className="h1-userName" style={{color:"#0074d9"}}>SUDO</h1> */}
+     <button className="createSurveybtn" onClick={auth0Client.signIn}>sign in</button>
     </div>
   }else{
-    return <div>
+    return <div className="userName"> 
   
     {this.state.user_list.map(x => (
       <UserName
@@ -836,22 +839,13 @@ usersAndSurveys = ()=>{
 
   render() {
     return (
-      <div className="mainPage">
+      <div className="App">
      
       <NavBar />
+     
           {this.renderContent()}
-<div>
-<br />
-       <br/>
-            </div>
-        <div className="home"> 
-      <br />    
-<br />
-<br />
-      <div>
-        </div>
 
-      </div>
+        <br />
       </div>
     );
   }
