@@ -790,7 +790,7 @@ surveyCreate = ()=>{
     console.log('testing',current_logged_in_user_id)
   if(current_logged_in_user_id=== false){
     return<div className="userName">
-    {/* <h1 className="h1-userName" style={{color:"#0074d9"}}>SUDO</h1> */}
+    {/* <h1 className="h1-userName"   style={{color:"#0074d9"}}>SUDO</h1> */}
      <button className="createSurveybtn" onClick={auth0Client.signIn}>sign in</button>
     </div>
   }else{
