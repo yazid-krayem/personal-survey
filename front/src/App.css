@@ -31,8 +31,7 @@ flex-flow: row wrap;
 }
 .addQuestion{
     flex: 1;
-    paheight: 768px;
-    dding: 0;
+    
     background-color: #fff;
     padding-left: 10px;
 

@@ -182,6 +182,17 @@ const start = async () => {
       next(e);
     }
   });
+
+  //inner join (questions and A survey)
+  app.get("/inner/qsurvey", async (req, res, next) => {
+    try {
+      const { survey_id } = req.query;
+      const answers = await controller.innerSurveysQuestions(survey_id);
+      res.json({ success: true, result: answers });
+    } catch (e) {
+      next(e);
+    }
+  });
   //inner join (questions and answers)
   app.get("/inner/question", async (req, res, next) => {
     try {

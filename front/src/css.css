@@ -43,3 +43,63 @@
     font-size:22px;
 
 }
+
+/* add question */
+.addQuestion{
+    height: 300px;
+  width: 40%;
+  display: table-cell;
+  border: 1px black solid;
+  margin: 0 auto;
+}
+.questions{
+    height: 300px;
+  width: 50%;
+  display: table-cell;
+}
+@media (max-width: 600px){
+    .addQuestion{
+      display: block;
+      height: 200px;
+      width: 100%;
+      margin-top: 40px;
+      padding: 0;
+
+    }
+    
+    .questions{
+      display: block;
+      height: 150px;
+      width: 100%;
+      padding: 0;
+    }
+    .survey{
+        width: 70%;
+        margin: 0 auto;
+        margin-top: 40px;
+    }
+  }
+.survey{
+    width: 70%;
+    margin: 0 auto;
+    margin-top: 40px;
+}
+input[type=text] {
+    width: 100%;
+    padding: 20px 20px;
+    margin: 12px 0;
+    box-sizing: border-box;
+  }
+  #select{
+    width: 100%;
+   
+    box-sizing: border-box;
+}
+
+#test{
+    width:360px;
+}
+.add-question-h4{
+    text-align: center;
+    margin: 0 auto;
+}

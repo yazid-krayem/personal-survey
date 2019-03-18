@@ -46,6 +46,7 @@ class App extends Component {
     user:'',
     inner:[],
     surveysUsers:[],
+    questionSurvey:[]
     
 
 
@@ -65,9 +66,12 @@ async componentWillReceiveProps(){
   const auth0_sub = current_logged_in_user_id
   await this.innerSurveysAndUsers(auth0_sub)
   await this.innerSurveysAndQuestions()
+  await this.innerQuestionAsurvey(survey_id)
 }
 
 async componentDidMount() {
+  const {survey_id} = this.state
+
   await this.getUsersList()
   await this.getAllQuestions();
   await this.getAllSurveys()
@@ -87,7 +91,26 @@ async componentDidMount() {
     }
     this.setState({ checkingSession: false });
   }
- 
+
+  //inner join questions Asurvey
+  innerQuestionAsurvey =  async survey_id => {
+    try {
+      const {survey_id} = this.state
+      const url = makeUrl(`inner/qsurvey?survey_id=${survey_id}`)
+      console.log('Asurvey',url)
+      const response =  await fetch(url);
+      const answer =  await response.json();
+      if (answer.success) {
+        const questionSurvey = answer.result;
+        this.setState({ questionSurvey });
+      } else {
+        this.setState({ error_message: answer.message });
+      }
+      
+    } catch (err) {
+      this.setState({ error_message: err.message });
+    }
+  };
   //get Survey Question query
   getSurveyQuestions = async id => {
   
@@ -147,10 +170,10 @@ async componentDidMount() {
       const answer = await response.json();
       if (answer.success) {
         // remove the user from the current list of users
-        const survey_question = this.state.survey_question.filter(
+        const question_list = this.state.question_list.filter(
           question => question.id !== question_id
         );
-        this.setState({ survey_question });
+        this.setState({ question_list });
         toast('deleted')
       } else {
         this.setState({ error_message: answer.message });
@@ -187,8 +210,8 @@ updateQuestion = async (question_id, props) => {
       // we update the user, to reproduce the database changes:
 
       const survey_question = this.state.survey_question.map(question => {
-        // if this is the contact we need to change, update it. This will apply to exactly
-        // one contact
+        // if this is the question we need to change, update it. This will apply to exactly
+        // one question
         if (question.id === question_id ) {
           const new_question = {
             id: question_id,
@@ -228,7 +251,7 @@ createQuestion = async props => {
       question_title:props.question_title,
       question_type:props.question_type,
       question_data:props.question_data,
-      survey_id:props.survey_id,
+      survey_id,
       token:this.state.token
     })
     const response = await fetch(url,{
@@ -240,8 +263,8 @@ createQuestion = async props => {
       const question = { question_title,question_type,question_data, id:question_id };
       this.setState({question_id:question_id});
       const question_list = [...this.state.question_list, question];
-      const survey_question = [...this.state.survey_question,question]
-      this.setState({ question_list, survey_question });
+      const questionSurvey = [...this.state.questionSurvey,question]
+      this.setState({ question_list, questionSurvey });
       
     } else {
       this.setState({ error_message: answer.message });
@@ -291,8 +314,8 @@ createAnswer = async props => {
     const answer = await response.json();
     if (answer.success) {
      
-      const answer_id = answer.result;
-      const answer = { answer_text,answer_id };
+      // const answer_id = answer.result;
+      const answer = { answer_text };
       const answer_list = [...this.state.answer_list, answer];
       this.setState({ answer_list });
     } else {
@@ -412,7 +435,7 @@ getAllAnswers = async order => {
     this.createQuestion({ question_title,  question_type,question_data,survey_id});
 
     // empty
-    this.setState({ question_title:'',question_type:'',question_data:'',survey_id});
+    this.setState({ question_title:'',question_type:'',question_data:''});
 
   };
  
@@ -427,7 +450,7 @@ change = ()=>{
 
   this.props.history.push('/user-side')
 }
-
+/* 
   surveyFormat =() =>{
     const  question = this.state.question_list;
     return(
@@ -490,7 +513,7 @@ change = ()=>{
     )
   }
  
- 
+  */
   renderUser() {
     const isLoggedIn = auth0Client.isAuthenticated();
     if (isLoggedIn) {
@@ -565,6 +588,7 @@ data = ()=>{
  
 
 }
+
 userSide = ()=>{
   const  question = this.state.survey_question;
   console.log('app',this.state.survey_name)
@@ -647,7 +671,7 @@ userSide = ()=>{
       const answer = await response.json();
       if (answer.success) {
         const survey_id = answer.result;
-        const survey = { survey_name, id:survey_id, };
+        const survey = { survey_name, survey_id };
         this.setState({survey_id:survey_id,survey_name:survey_name});
         const survey_list = [...this.state.survey_list, survey];
         this.setState({ survey_list });
@@ -662,8 +686,7 @@ userSide = ()=>{
   };
  
 surveyQuestions =() =>{
-  const  question = this.state.survey_question;
-  const item = question;
+  const  question = this.state.questionSurvey;
     return(
       <div  className="survey">
       <div className="questions">
@@ -674,7 +697,7 @@ surveyQuestions =() =>{
        <p></p>
        <h2 className="survey_name">{this.state.survey_name}</h2>
        <hr />
-      {item.map(question => (
+      {question.map(question => (
         <SurveyQuestions
           key={question.id}
           question_id={question.id}
@@ -701,8 +724,8 @@ surveyQuestions =() =>{
     
     
       <div className="addQuestion">
-      <br />
 <form className="third" onSubmit={this.onSubmit}>
+      <h4  className="add-question-h4">ADD Question</h4>
         <input
         id="test"
           type="text"
@@ -729,8 +752,8 @@ surveyQuestions =() =>{
         </div>
         </form>
         <hr />
-        <button className="submit" onClick={this.change}>Save Survey</button>
 
+        <button className="submit" onClick={this.change}>Save Survey</button>
         </div>
 
     </div>
@@ -842,9 +865,9 @@ usersAndSurveys = ()=>{
       <div className="App">
      
       <NavBar />
-     
+     <br />
           {this.renderContent()}
-
+<br />
         <br />
       </div>
     );

@@ -35,7 +35,7 @@ export default class SurveyQuestions extends React.Component {
     return (
       <div>
 
-        <div className="questions">
+        <div >
       
 
           <article class="card">
