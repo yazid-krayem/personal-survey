@@ -282,10 +282,7 @@ const innerSurveysandQuestions = async(orderBy) =>{
 }
 const innerSurveysQuestions = async(survey_id) =>{
   try{
-      /* let statement = `SELECT *
-      FROM survey
-      INNER JOIN question on question.survey_id = survey.survey_id where survey.survey_id=${survey_id}`
-       */
+      
       let statement = `SELECT * from question where survey_id=${survey_id}`
    const rows = await db.all(statement)
  if(!rows.length){
@@ -303,6 +300,25 @@ const innerSurveysandUsers = async(auth0_sub) =>{
       let statement = `SELECT *
       FROM user
       INNER JOIN survey on survey.auth0_sub = user.auth0_sub where user.auth0_sub=${auth0_sub}`
+     
+   
+   const rows = await db.all(statement)
+ if(!rows.length){
+   throw new Error(`no rows found`)
+  }
+  return rows
+}catch(e){
+ throw new Error(`couldn't retrieve questions: `+e.message)
+}
+}
+
+//inner (questions and surveys and users )
+const innerQuestionsUsersSurveys = async(auth0_sub) =>{
+  try{
+      let statement = `SELECT *
+      FROM survey
+      INNER JOIN question on question.survey_id = survey.survey_id
+	  INNER JOIN user on user.auth0_sub = survey.auth0_sub where user.auth0_sub=${auth0_sub}`
      
    
    const rows = await db.all(statement)
@@ -415,7 +431,8 @@ const controller = {
     innerSurveysandQuestions,
     getQuestionsBySurvey,
     innerSurveysandUsers,
-    innerSurveysQuestions
+    innerSurveysQuestions,
+    innerQuestionsUsersSurveys
 }
 return controller
 }

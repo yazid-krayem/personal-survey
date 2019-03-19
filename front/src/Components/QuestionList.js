@@ -12,7 +12,7 @@ export default class QuestionList extends React.Component {
     const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     const is_author = author_id === current_logged_in_user_id
-    console.log(this.props)
+    console.log('user-side',this.props)
 console.log('question',this.props.survey_name)
     return (
       <div>

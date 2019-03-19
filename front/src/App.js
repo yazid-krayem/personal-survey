@@ -70,13 +70,14 @@ async componentWillReceiveProps(){
 }
 
 async componentDidMount() {
-  const {survey_id} = this.state
-
+  const isLoggedIn = auth0Client.isAuthenticated();
+  const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
+  const auth0_sub = current_logged_in_user_id
   await this.getUsersList()
   await this.getAllQuestions();
   await this.getAllSurveys()
   await this.getAllAnswers()
-  
+  await this.innerQuestionSurveyUsers(auth0_sub)
     
     if (this.props.location.pathname === "/callback") {
       this.setState({ checkingSession: false });
@@ -91,7 +92,27 @@ async componentDidMount() {
     }
     this.setState({ checkingSession: false });
   }
-
+// inner join questions surveys users 
+innerQuestionSurveyUsers =  async auth0_sub => {
+  try {
+    const url = makeUrl(`inner/questions/surveys/users`)
+    console.log('innerAll',url)
+    console.log('Asurvey',url)
+    const response =  await fetch(url,
+     { headers: { Authorization: `Bearer ${auth0Client.getIdToken()}`}
+    });
+    const answer =  await response.json();
+    if (answer.success) {
+      const survey_question = answer.result;
+      this.setState({ survey_question });
+    } else {
+      this.setState({ error_message: answer.message });
+    }
+    
+  } catch (err) {
+    this.setState({ error_message: err.message });
+  }
+};
   //inner join questions Asurvey
   innerQuestionAsurvey =  async survey_id => {
     try {
@@ -450,70 +471,7 @@ change = ()=>{
 
   this.props.history.push('/user-side')
 }
-/* 
-  surveyFormat =() =>{
-    const  question = this.state.question_list;
-    return(
-      <div  className="survey">
-      
-      <div className="questions">
-      
-      <form onSubmit={this.SubmitQuestions}>
-         
-         <br />
-        {question.map(question => (
-          <Question
-            key={question.id}
-            question_id={question.id}
-            question_data={question.question_data}
-            question_title={question.question_title}
-            question_type={question.question_type}
-            author_id={question.author_id}
-            updateQuestion={this.updateQuestion}
-            deleteQuestion={this.deleteQuestion}
-          />
-          
-        ))}
 
-        </form>
-        </div>
-        <div className="addQuestion">
-        <br />
-<form className="third" onSubmit={this.onSubmit}>
-          <input
-          id="test"
-            type="text"
-            placeholder="question"
-            onChange={evt => this.setState({ question_title: evt.target.value })}
-            value={this.question_title}
-          />
-          <input type="text"
-                    id="test"getPersonalPageData
-            placeholder ="question_data"
-            onChange={evt => this.setState({ question_data: evt.target.value })}
-            value={this.question_data}
-          />
-          <select id="option" onChange={evt => this.setState({ question_type: evt.target.value })}
-            value={this.question_type}>
-            <option>Question-Type</option>
-            <option>radio</option>
-            <option>text</option>
-          </select>
-         
-          <div>
-            <input type="submit" value="ADD" />
-          </div>
-          </form>
-          <hr />
-          <button className="submit" onClick={this.change}>Save Survey</button>
-
-          </div>
-
-      </div>
-    )
-  }
- 
-  */
   renderUser() {
     const isLoggedIn = auth0Client.isAuthenticated();
     if (isLoggedIn) {
@@ -590,8 +548,8 @@ data = ()=>{
 }
 
 userSide = ()=>{
-  const  question = this.state.survey_question;
-  console.log('app',this.state.survey_name)
+  const  question = this.state.questionSurvey;
+  console.log('app',this.state.questionSurvey)
 
   return(
     <div className="user-side" >
@@ -604,7 +562,7 @@ userSide = ()=>{
       {question.map(question => (
         <QuestionList
           key={question.id}
-          question_id={question.id}
+          question_id={question.question_id}
           question_data={question.question_data}
           question_title={question.question_title}
           question_type={question.question_type}
@@ -636,7 +594,7 @@ userSide = ()=>{
       {inner.map(x => (
         <DataCollection
           key={x.id}
-          question_id={x.id}
+          question_id={x.question_id}
           question_title={x.question_title}
           question_type={x.question_type}
           answer_text={x.answer_text}
@@ -689,14 +647,17 @@ surveyQuestions =() =>{
   const  question = this.state.questionSurvey;
     return(
       <div  className="survey">
-      <div className="questions">
+                 
+
+      <div >
     
-    <form onSubmit={this.SubmitQuestions}>
+    <form onSubmit={this.SubmitQuestions}className="questions" >
        
        <br />
        <p></p>
        <h2 className="survey_name">{this.state.survey_name}</h2>
        <hr />
+       <div className="mapping"> 
       {question.map(question => (
         <SurveyQuestions
           key={question.id}
@@ -711,13 +672,12 @@ surveyQuestions =() =>{
         />
         
       ))}
-         
+         </div>
       </form>
       
       </div>
     
   
-       
   
  
    
@@ -828,6 +788,7 @@ surveyCreate = ()=>{
         getAllSurveys={this.getAllSurveys}
         survey_name={this.state.survey_name}
         UNState={this.state.user_name}
+        
        
       />
       
@@ -839,7 +800,7 @@ usersAndSurveys = ()=>{
   const  survey = this.state.surveysUsers;
 
   return(
-    <div className="user-side" >
+    <div className="row scroll" >
     
     
 

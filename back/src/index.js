@@ -182,7 +182,17 @@ const start = async () => {
       next(e);
     }
   });
+  // inner join (questions , surveys and users )
+  app.get("/inner/questions/surveys/users", async (req, res, next) => {
+    try {
+      const auth0_sub  = req.user.sub;
 
+      const answers = await controller.innerQuestionsUsersSurveys(auth0_sub);
+      res.json({ success: true, result: answers });
+    } catch (e) {
+      next(e);
+    }
+  });
   //inner join (questions and A survey)
   app.get("/inner/qsurvey", async (req, res, next) => {
     try {

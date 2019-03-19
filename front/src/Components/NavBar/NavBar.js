@@ -10,8 +10,8 @@ class Header extends Component {
     
     return (
         <div className="mainNav">
- <Navbar bg="dark" variant="dark">
-    <Navbar.Brand ><Link to='/'>Sudo</Link></Navbar.Brand>
+ <Navbar bg="dark" variant="light">
+    <Navbar.Brand id="s"><Link to='/'>Sudo</Link></Navbar.Brand>
     <Nav className="mr-auto">
       <Nav.Link><Link to="/">Home</Link></Nav.Link>
       <IfAuthenticated>

@@ -7,6 +7,7 @@ export default class SurveyQuestions extends React.Component {
   state = {
     editMode: false
   };
+ 
   toggleEditMode = () => {
     const editMode = !this.state.editMode;
     this.setState({ editMode });
@@ -30,10 +31,10 @@ export default class SurveyQuestions extends React.Component {
     const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
     const is_author = author_id === current_logged_in_user_id
-
+    
     
     return (
-      <div>
+      <div id="ss">
 
         <div >
       
@@ -43,7 +44,7 @@ export default class SurveyQuestions extends React.Component {
           {question_id} - {question_title} 
   </header>
     <footer>
-  <button onClick={this.toggleEditMode} className="success">
+        <button onClick={this.toggleEditMode} className="success">
                 edit
               </button>
               <button  onClick={(e) => {this.deleteQuestions(e)}} className="error">
@@ -124,6 +125,8 @@ export default class SurveyQuestions extends React.Component {
       return this.renderEditMode();
     } else {
       return this.renderViewMode();
+              
+
       
     }
   }

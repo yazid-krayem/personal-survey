@@ -3,7 +3,8 @@
     background-size: 100% 100% ;
     background-repeat: no-repeat;
     /* background-size: auto; */
-    height: 635px;
+    max-width: 1600px;
+    min-height: 720px;
 
 }
 
@@ -17,13 +18,18 @@
 .h1-userName{
     font-size: 62px;
     font-family: "Times New Roman", Times, serif;
-    
 
+}
+.tests::first-letter{
+color: #0074d9;
+border: 1px black solid;
 }
 .createSurveybtn{
     font-size: 20px;
     /* padding: 0; */
-    margin: 0 auto;
+    /* margin: 0 auto; */
+    margin-left: 100px;
+    margin-top: 70px;
     /* color: #0074d9; */
     
 
@@ -78,11 +84,19 @@
         margin: 0 auto;
         margin-top: 40px;
     }
+
+    .scroll{
+    background-color: lightblue;
+  width: auto;
+  height: 410px;
+  overflow: auto;
+}
   }
 .survey{
     width: 70%;
     margin: 0 auto;
     margin-top: 40px;
+   
 }
 input[type=text] {
     width: 100%;
@@ -102,4 +116,11 @@ input[type=text] {
 .add-question-h4{
     text-align: center;
     margin: 0 auto;
+}
+
+.mapping{
+
+    width: 100%;
+    height: 410px;
+    overflow: auto;
 }

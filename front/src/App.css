@@ -112,3 +112,9 @@ input[type=text]::placeholder{
     border-right: 1px solid #ccc;
     background-color: #fff;
 }
+.questions{
+    margin: 0 auto;
+  height: 50px;
+  width: 300px;
+  overflow: auto;
+}

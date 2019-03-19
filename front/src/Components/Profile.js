@@ -12,13 +12,19 @@ export default class Profile extends React.Component {
     
     return (
       <div>
+        <br />
+        <br />
+      <div className="col-xs-12
+      col-sm-8
+      col-md-6
+      col-lg-4 
+      ">
 
-        <div >
 
        <button>{survey_id}-{survey_name}</button>
        
        
-        </div>
+      </div>
       </div>
     );
   }
