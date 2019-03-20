@@ -7,19 +7,19 @@ export default class DataCollection extends React.Component {
   
   renderViewMode() {
     
-    const { question_id, question_title,answer_text,survey_name } = this.props;
-      console.log('data',this.props)
+    const { question_id, question_title, answer } = this.props;
+    console.log(this.props)
+     console.log('data',answer)
 
     return (
       <div>
 
         <div >
-        {/* <h2 className="survey_name">{survey_name}</h2> */}
 <hr />
 <div className="datacollection">
         <span>
-          <h3>{question_title}</h3> < br />
-          {answer_text}
+          <h1>{question_title}</h1> < br />
+          {answer.map(a =>(<h3>{a.answer_text}</h3>))}
         </span>
          
 
@@ -40,3 +40,4 @@ export default class DataCollection extends React.Component {
       }
     }
       
+

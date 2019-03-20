@@ -46,7 +46,8 @@ class App extends Component {
     user:'',
     inner:[],
     surveysUsers:[],
-    questionSurvey:[]
+    questionSurvey:[],
+    activities:[]
     
 
 
@@ -582,8 +583,59 @@ userSide = ()=>{
       </div>
       </div>
   )}
+   reduceInner  = ()=>{
+     const {inner} = this.state
+     var dateArr = Object.values(inner.reduce((result, {
+    question_id,
+    question_title,
+    question_data,
+    question_type,
+    survey_id,
+    answer_text,
+    answer_id,
+    auth0_sub
+}) => {
+    // Create new group
+    if (!result[question_id]) result[question_id] = {
+      question_id,
+        activities: []
+    };
+    // Append to group
+    result[question_id].activities.push({
+      question_title,
+      question_data,
+      question_type,
+      survey_id,
+      answer_text,
+      answer_id,
+      auth0_sub
+    });
+    return result;
+}, {}))
+  };
  dataCollection = ()=>{
   const  inner = this.state.inner;
+  var dateArr = Object.values(inner.reduce((result, {
+    question_id,
+    question_type,
+    question_title,
+    answer_id,
+    answer_text
+}) => {
+    // Create new group
+    if (!result[question_id]) result[question_id] = {
+      question_id,
+      question_type,
+    question_title,
+        answers: []
+    };
+    // Append to group
+    result[question_id].answers.push({
+      answer_id,
+      answer_text
+    });
+    return result;
+}, {}));
   return(
     <div className="dataCollection-main" >
             <h2 className="survey_name">{this.state.survey_name}</h2>
@@ -591,16 +643,14 @@ userSide = ()=>{
     <div className="dataCollection" >
     
     <form onSubmit={this.SubmitQuestions}>
-       
        <br />
-      {inner.map(x => (
+      {dateArr.map(x => (
         <DataCollection
           key={x.id}
           question_id={x.question_id}
           question_title={x.question_title}
           question_type={x.question_type}
-          answer_text={x.answer_text}
-          author_id={x.author_id}
+          answer={x.answers}
           survey_id={this.state.survey_id}  
           survey_name={this.state.survey_name}
         />
@@ -820,7 +870,48 @@ usersAndSurveys = ()=>{
     </div>
   )
 }
+groupAnswersByQuestion = ()=> {
+  const {inner} = this.state
+  const questions = {}
 
+  for(let i; i < inner.length; i++){
+    const answer = inner[i]
+    const { question_id, question_text,question_title } = answer
+    if(!questions[question_id]){
+      questions[question_id] = {
+        question_id,
+        question_text,
+        question_title,
+
+        answers:[]
+      }
+    }
+    questions[question_id].answers.push(inner)
+  }
+  const questions_array = Object.values(questions)
+  //[ 
+  //  { question_id, question_text, answers:[
+  //    { answer_id, answer_text },
+  //    { answer_id, answer_text },
+  //    { answer_id, answer_text }
+  //  ]},
+  // ]
+  /**
+   * const questions = this.groupAnswersByQuestion(answers)
+   * questions.map( ({ question_text, answers }) => {
+   *  return <div>
+   *    <h2>{question_text}</h2>
+   *    <ul>
+   *      { answers.map (({ answer_text })=>{
+   *      })}
+   *    </ul>
+   * </div>
+   * })
+   */
+  console.log('wowo',questions_array)
+  
+  return questions_array
+};
   render() {
     return (
       <div className="App">
@@ -829,11 +920,12 @@ usersAndSurveys = ()=>{
      <br />
           {this.renderContent()}
 <br />
+{this.groupAnswersByQuestion()}
         <br />
-
       </div>
     );
   }
 }
 
 export default withRouter(App);
+
