@@ -10,32 +10,10 @@ flex-flow: row wrap;
   background-size: cover;
 
 }
-.survey_name{
-    text-align: center;
-}
-.survey{
-    display: flex;
-    border: 1px solid #ccc;
-    position: relative;
-  margin:auto;
-  position: fixed;
-  top: 30%;
-  left: 10%;
-}
-.questions{
-    flex: 0 0 60%;
-    border-right: 1px solid #ccc;
-    background-color: #fff;
-    
 
-}
-.addQuestion{
-    flex: 1;
-    
-    background-color: #fff;
-    padding-left: 10px;
 
-}
+
+
 input[type=text] {
     width: 100%;
     padding: 20px 20px;

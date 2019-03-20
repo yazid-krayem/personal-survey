@@ -1,0 +1,121 @@
+.submit{
+    font-size: 17px;
+    width: 100%;
+    margin-left: 35px;
+}
+.span{
+    font-size: 50px;
+
+}
+
+
+
+/* add question */
+.addQuestion{
+    width: 200px;
+    text-align: center;
+    margin: 0 auto;
+    padding: 0
+}
+.questions{
+    width: 50%;
+    text-align: center;
+    margin: 0 auto;
+  }
+/* .addQuestion{
+    height: 300px;
+  width: 40%;
+  display: table-cell;
+  border: 1px black solid;
+  margin: 0 auto;
+}
+.questions{
+    height: 300px;
+  width: 50%;
+  display: table-cell;
+} */
+
+
+input[type=text] {
+    padding: 20px 20px;
+    margin: 12px 0;
+    box-sizing: border-box;
+  }
+  #select{
+    width: 100%;
+   
+    box-sizing: border-box;
+}
+.addQuestion-form{
+    width: auto ;
+}
+
+#test{
+    width:300px;
+}
+#option{
+  width: 300px;
+}
+.add-question-h4{
+    /* text-align: center; */
+    max-width: 300px; /* Original width of the logo image */ 
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    float: left;
+
+    /* position: relative; */
+}
+.footer{
+  display: inline;
+  padding-left: 30px;
+}
+.col-xs-6 {
+    flex-basis: 40%;
+  }
+.mapping{
+
+    width: 100%;
+    height: 170px;
+    overflow: auto;
+}
+#survey_name{
+    text-align: center;
+    width: auto;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* media core  */
+@media (max-width: 600px){
+    .addQuestion{
+      display: block;
+      /* height: 200px; */
+      width: 100%;
+      margin-top: 140px;
+      padding: 0;
+
+    }
+    
+    .questions{
+      display: block;
+      height: 170px;
+      width: 100%;
+      padding: 0;
+    }
+    .survey{
+        width: 90%;
+        margin: 0 auto;
+        margin-top: 40px;
+    }
+
+  
+  }
+  .survey{
+    background-image: url("./createSurvey.jpg");
+    width: 100%;
+    
+    height: 800px;
+    max-width: 1600px;
+    min-height: 720px;
+    margin: 0 auto;
+}

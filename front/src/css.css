@@ -20,27 +20,18 @@
     font-family: "Times New Roman", Times, serif;
 
 }
-.tests::first-letter{
-color: #0074d9;
-border: 1px black solid;
-}
+
 .createSurveybtn{
-    font-size: 20px;
+    font-size: 22px;
     /* padding: 0; */
     /* margin: 0 auto; */
     margin-left: 100px;
-    margin-top: 70px;
+    margin-top: 110px;
     /* color: #0074d9; */
-    
-
-}
-.span{
-    font-size: 50px;
-
 }
 .popup{
     /* border: 1px black solid; */
-    margin-left: 75px;
+    margin-left: 95px;
 
 }
 #title::placeholder{
@@ -49,78 +40,8 @@ border: 1px black solid;
     font-size:22px;
 
 }
-
-/* add question */
-.addQuestion{
-    height: 300px;
-  width: 40%;
-  display: table-cell;
-  border: 1px black solid;
-  margin: 0 auto;
-}
-.questions{
-    height: 300px;
-  width: 50%;
-  display: table-cell;
-}
-@media (max-width: 600px){
-    .addQuestion{
-      display: block;
-      height: 200px;
-      width: 100%;
-      margin-top: 40px;
-      padding: 0;
-
-    }
-    
-    .questions{
-      display: block;
-      height: 150px;
-      width: 100%;
-      padding: 0;
-    }
-    .survey{
-        width: 70%;
-        margin: 0 auto;
-        margin-top: 40px;
-    }
-
-    .scroll{
-    background-color: lightblue;
-  width: auto;
-  height: 410px;
-  overflow: auto;
-}
-  }
-.survey{
-    width: 70%;
-    margin: 0 auto;
-    margin-top: 40px;
-   
-}
-input[type=text] {
-    width: 100%;
-    padding: 20px 20px;
-    margin: 12px 0;
-    box-sizing: border-box;
-  }
-  #select{
-    width: 100%;
-   
-    box-sizing: border-box;
-}
-
-#test{
-    width:360px;
-}
-.add-question-h4{
-    text-align: center;
-    margin: 0 auto;
-}
-
-.mapping{
-
-    width: 100%;
-    height: 410px;
-    overflow: auto;
+.add{
+margin-left: 65px;
+width: 70%;
+ 
 }

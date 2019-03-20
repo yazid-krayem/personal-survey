@@ -451,12 +451,13 @@ getAllAnswers = async order => {
   }
   onSubmit = evt => {
     evt.preventDefault();
-    const { question_title, question_type,question_data,survey_id} = this.state;
+    const { question_title, question_type,survey_id} = this.state;
+    const question_data = 'deleted'
     // add the question 
     this.createQuestion({ question_title,  question_type,question_data,survey_id});
-
+console.log(this.createQuestion)
     // empty
-    this.setState({ question_title:'',question_type:'',question_data:''});
+    this.setState({ question_title:' ',question_type:' ',question_data:' '});
 
   };
  
@@ -646,8 +647,8 @@ userSide = ()=>{
 surveyQuestions =() =>{
   const  question = this.state.questionSurvey;
     return(
-      <div  className="survey">
-                 
+                 <div className="row survey " >
+        <div class="col-xs-12">
 
       <div >
     
@@ -655,7 +656,7 @@ surveyQuestions =() =>{
        
        <br />
        <p></p>
-       <h2 className="survey_name">{this.state.survey_name}</h2>
+       <h2 id="survey_name">{this.state.survey_name}</h2>
        <hr />
        <div className="mapping"> 
       {question.map(question => (
@@ -677,14 +678,9 @@ surveyQuestions =() =>{
       
       </div>
     
-  
-  
- 
-   
-    
-    
+{/* add question section  */}
       <div className="addQuestion">
-<form className="third" onSubmit={this.onSubmit}>
+<form className="addQuestion-form" onSubmit={this.onSubmit}>
       <h4  className="add-question-h4">ADD Question</h4>
         <input
         id="test"
@@ -694,12 +690,12 @@ surveyQuestions =() =>{
           value={this.question_title}
         />
         
-        <input type="text"
+        {/* <input type="text"
                   id="test"getPersonalPageData
           placeholder ="question_data"
           onChange={evt => this.setState({ question_data: evt.target.value })}
           value={this.question_data}
-        />
+        /> */}
         <select id="option" onChange={evt => this.setState({ question_type: evt.target.value })}
           value={this.question_type}>
           <option>Question-Type</option>
@@ -708,14 +704,14 @@ surveyQuestions =() =>{
         </select>
        
         <div>
-          <input type="submit" value="ADD" />
+          <button className="add"value="ADD">ADD</button>
         </div>
         </form>
         <hr />
 
         <button className="submit" onClick={this.change}>Save Survey</button>
         </div>
-
+        </div>
     </div>
   )
 }
@@ -800,8 +796,8 @@ usersAndSurveys = ()=>{
   const  survey = this.state.surveysUsers;
 
   return(
-    <div className="row scroll" >
-    
+    <div className="row " >
+
     
 
        <br />
@@ -830,6 +826,7 @@ usersAndSurveys = ()=>{
           {this.renderContent()}
 <br />
         <br />
+
       </div>
     );
   }

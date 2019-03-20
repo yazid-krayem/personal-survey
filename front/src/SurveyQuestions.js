@@ -1,5 +1,6 @@
 import React from 'react';
 import * as auth0Client from "./auth";
+import './surveyQuestions.css'
 
 
 
@@ -34,16 +35,13 @@ export default class SurveyQuestions extends React.Component {
     
     
     return (
-      <div id="ss">
+      <div >
 
         <div >
       
 
-          <article class="card">
-  <header>
           {question_id} - {question_title} 
-  </header>
-    <footer>
+    <footer className="footer">
         <button onClick={this.toggleEditMode} className="success">
                 edit
               </button>
@@ -51,7 +49,6 @@ export default class SurveyQuestions extends React.Component {
                 x
               </button>
               </footer>
-</article>
           </div>
         
 
@@ -65,7 +62,6 @@ export default class SurveyQuestions extends React.Component {
     return (
       
       <form
-        className="third"
         onSubmit={this.onSubmit}
         onReset={this.toggleEditMode}
       >
@@ -75,12 +71,12 @@ export default class SurveyQuestions extends React.Component {
           name="question_title_input"
           defaultValue={question_title}
         />
-        <input
+        {/* <input
           type="text"
           placeholder="question_data"
           name="question_data_input"
           defaultValue={question_data}
-        />
+        /> */}
         <select name="question_type_input"
         defaultValue={question_type}
         >
@@ -109,7 +105,9 @@ export default class SurveyQuestions extends React.Component {
     const question_type_input = form.question_type_input;
     // extract the values
     const question_title = question_title_input.value;
-    const question_data = question_data_input.value;
+    // const question_data = question_data_input.value;
+    const question_data = 23
+
     const question_type = question_type_input.value;
     // get the question_id and the update function from the props
     const { question_id, updateQuestion } = this.props;
