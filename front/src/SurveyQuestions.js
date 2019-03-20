@@ -40,7 +40,7 @@ export default class SurveyQuestions extends React.Component {
         <div >
       
 
-          {question_id} - {question_title} 
+          <h3> {question_title}</h3> 
     <footer className="footer">
         <button onClick={this.toggleEditMode} className="success">
                 edit

@@ -1,6 +1,7 @@
 import React from 'react';
 import * as auth0Client from '../auth';
 import { withRouter } from 'react-router-dom';
+import './questionList.css'
 
 
 export default class QuestionList extends React.Component {
@@ -18,8 +19,8 @@ console.log('question',this.props.survey_name)
       <div>
 
         <div >
-        <h2 className="survey_name">{survey_name}</h2>
-
+<hr />
+<div className="user-answer-section"> 
         <span>
           {question_id} - {question_title} 
         </span>
@@ -28,10 +29,9 @@ console.log('question',this.props.survey_name)
       placeholder="answer_text"
        name='answer_text_input'
             />
-                <input type="submit" value="Save" />
-
+<button>Save</button>
           </form>
-       
+          </div>
         </div>
       </div>
     );

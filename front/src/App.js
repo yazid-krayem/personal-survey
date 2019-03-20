@@ -585,9 +585,10 @@ userSide = ()=>{
  dataCollection = ()=>{
   const  inner = this.state.inner;
   return(
-    <div  >
-    
-    <div >
+    <div className="dataCollection-main" >
+            <h2 className="survey_name">{this.state.survey_name}</h2>
+
+    <div className="dataCollection" >
     
     <form onSubmit={this.SubmitQuestions}>
        
@@ -650,7 +651,9 @@ surveyQuestions =() =>{
                  <div className="row survey " >
         <div class="col-xs-12">
 
-      <div >
+      <div className="addquestion-survey">
+      
+
     
     <form onSubmit={this.SubmitQuestions}className="questions" >
        
@@ -704,7 +707,7 @@ surveyQuestions =() =>{
         </select>
        
         <div>
-          <button className="add"value="ADD">ADD</button>
+          <button className="add error"value="ADD">ADD</button>
         </div>
         </form>
         <hr />
@@ -713,6 +716,7 @@ surveyQuestions =() =>{
         </div>
         </div>
     </div>
+        
   )
 }
 //router
@@ -770,7 +774,7 @@ surveyCreate = ()=>{
   if(current_logged_in_user_id=== false){
     return<div className="userName">
     {/* <h1 className="h1-userName"   style={{color:"#0074d9"}}>SUDO</h1> */}
-     <button className="createSurveybtn" onClick={auth0Client.signIn}>sign in</button>
+     <button className="createSurveybtn-signin" onClick={auth0Client.signIn}>sign in</button>
     </div>
   }else{
     return <div className="userName"> 
@@ -796,7 +800,7 @@ usersAndSurveys = ()=>{
   const  survey = this.state.surveysUsers;
 
   return(
-    <div className="row " >
+    <div className="row  main-profile" >
 
     
 

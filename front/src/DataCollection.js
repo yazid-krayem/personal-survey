@@ -1,4 +1,5 @@
 import React from 'react';
+import './datacollection.css'
 
 
 export default class DataCollection extends React.Component {
@@ -13,14 +14,16 @@ export default class DataCollection extends React.Component {
       <div>
 
         <div >
-          <h3>{survey_name}</h3>
+        {/* <h2 className="survey_name">{survey_name}</h2> */}
+<hr />
+<div className="datacollection">
         <span>
-          {question_id} - {question_title} < br />
+          <h3>{question_title}</h3> < br />
           {answer_text}
         </span>
          
 
-       
+        </div>
         </div>
       </div>
     );
