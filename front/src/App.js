@@ -97,8 +97,7 @@ async componentDidMount() {
 innerQuestionSurveyUsers =  async auth0_sub => {
   try {
     const url = makeUrl(`inner/questions/surveys/users`)
-    console.log('innerAll',url)
-    console.log('Asurvey',url)
+   
     const response =  await fetch(url,
      { headers: { Authorization: `Bearer ${auth0Client.getIdToken()}`}
     });
@@ -119,7 +118,6 @@ innerQuestionSurveyUsers =  async auth0_sub => {
     try {
       const {survey_id} = this.state
       const url = makeUrl(`inner/qsurvey?survey_id=${survey_id}`)
-      console.log('Asurvey',url)
       const response =  await fetch(url);
       const answer =  await response.json();
       if (answer.success) {
@@ -372,7 +370,6 @@ innerQuestionsAnswers =  async survey_id => {
 innerSurveysAndUsers =  async auth0_sub => {
   try {
     const url = makeUrl(`inner/surveys?auth0_sub="${auth0_sub}"`)
-    console.log('this is ',url)
     const response =  await fetch(url);
     const answer =  await response.json();
     if (answer.success) {
@@ -392,7 +389,6 @@ innerSurveysAndQuestions =  async order => {
   try {
     const url = makeUrl(`inner/survey/questions`)
     const response =  await fetch(url);
-    console.log('surevy',url)
     const answer =  await response.json();
     if (answer.success) {
     const survey_question = answer.result;
@@ -456,7 +452,6 @@ getAllAnswers = async order => {
     const question_data = 'deleted'
     // add the question 
     this.createQuestion({ question_title,  question_type,question_data,survey_id});
-console.log(this.createQuestion)
     // empty
     this.setState({ question_title:' ',question_type:' ',question_data:' '});
 
@@ -551,7 +546,6 @@ data = ()=>{
 
 userSide = ()=>{
   const  question = this.state.questionSurvey;
-  console.log('app',this.state.questionSurvey)
 
   return(
     <div className="user-side" >
@@ -798,7 +792,6 @@ login = async () => {
   try {
     await auth0Client.handleAuthentication();
     const name = auth0Client.getProfile().name; // get the data from Auth0
-    console.log('720',name)
     await this.getPersonalPageData(); // get the data from our server
     toast(`${name} is logged in`);
     this.props.history.push("/");
@@ -820,7 +813,7 @@ return (user_list.map(x=> <div>{x.user_name}</div>))
 surveyCreate = ()=>{
   const isLoggedIn = auth0Client.isAuthenticated();
     const current_logged_in_user_id = isLoggedIn && auth0Client.getProfile().sub
-    console.log('testing',current_logged_in_user_id)
+    
   if(current_logged_in_user_id=== false){
     return<div className="userName">
     {/* <h1 className="h1-userName"   style={{color:"#0074d9"}}>SUDO</h1> */}
@@ -838,8 +831,6 @@ surveyCreate = ()=>{
         getAllSurveys={this.getAllSurveys}
         survey_name={this.state.survey_name}
         UNState={this.state.user_name}
-        
-       
       />
       
     ))}
@@ -908,7 +899,6 @@ groupAnswersByQuestion = ()=> {
    * </div>
    * })
    */
-  console.log('wowo',questions_array)
   
   return questions_array
 };
